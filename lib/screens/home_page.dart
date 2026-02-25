@@ -34,6 +34,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
     double scrollProgress = (offset / screenHeight).clamp(0.0, 1.0);
 
@@ -68,6 +69,29 @@ class _LandingPageState extends State<LandingPage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
+                      // Large centered background text (behind the image)
+                      Center(
+                        child: SizedBox(
+                          width: screenWidth,
+                          height: screenHeight,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              'NITHESH',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'gondens',
+                                fontSize: 200,
+                                letterSpacing: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                                shadows: [Shadow(blurRadius: 20, color: Colors.black45)],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
                       Opacity(
                         opacity: (1 - scrollProgress).clamp(0.0, 1.0),
                         child: Container(
@@ -88,6 +112,7 @@ class _LandingPageState extends State<LandingPage> {
                             style: TextStyle(
                               fontSize: 24,
                               letterSpacing: 8,
+                              fontFamily: 'gondens',
                               fontWeight: FontWeight.w300,
                               color: Colors.white,
                               shadows: [Shadow(blurRadius: 10, color: Colors.black45)],
