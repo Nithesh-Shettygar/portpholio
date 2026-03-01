@@ -25,26 +25,31 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
+      // Ensure the mouse region is treated as a solid hit target
+      opaque: true,
       onEnter: (_) => setState(() => isHovered = true),
       onExit: (_) => setState(() => isHovered = false),
       cursor: SystemMouseCursors.click,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
-        width: 170, 
-        height: 260, 
+        width: 170,
+        height: 260,
+        // The scale happens from the center
         transform: Matrix4.identity()..scale(isHovered ? 1.05 : 1.0),
         transformAlignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.black, 
-          borderRadius: BorderRadius.circular(20), 
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isHovered ? const Color(0xFFF26A1B) : Colors.white, 
-            width: 3.0, 
+            color: isHovered ? const Color(0xFFF26A1B) : Colors.white,
+            width: 3.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: isHovered ? const Color(0xFFF26A1B).withOpacity(0.4) : Colors.black.withOpacity(0.8), 
+              color: isHovered
+                  ? const Color(0xFFF26A1B).withOpacity(0.4)
+                  : Colors.black.withOpacity(0.8),
               blurRadius: isHovered ? 40 : 30,
               offset: isHovered ? const Offset(0, 0) : const Offset(0, 15),
               spreadRadius: isHovered ? 5 : -5,
@@ -54,6 +59,8 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
+            // HitTestBehavior.translucent ensures the stack doesn't block mouse events
+            alignment: Alignment.center,
             children: [
               // Glass reflection gradient
               Positioned.fill(
@@ -64,7 +71,7 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                       end: Alignment.bottomRight,
                       stops: const [0.0, 0.3, 0.3, 1.0],
                       colors: [
-                        Colors.white.withOpacity(isHovered ? 0.20 : 0.10), 
+                        Colors.white.withOpacity(isHovered ? 0.20 : 0.10),
                         Colors.white.withOpacity(isHovered ? 0.05 : 0.02),
                         Colors.transparent,
                         Colors.transparent,
@@ -73,8 +80,7 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                   ),
                 ),
               ),
-              
-              // Positioned.fill ensures the Column takes up the whole card height
+
               Positioned.fill(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -88,7 +94,9 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                           AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),
                             style: TextStyle(
-                              color: isHovered ? const Color(0xFFF26A1B) : Colors.white70,
+                              color: isHovered
+                                  ? const Color(0xFFF26A1B)
+                                  : Colors.white70,
                               fontSize: 10,
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.w700,
@@ -99,33 +107,33 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                           Text(
                             "0${widget.index + 1}",
                             style: TextStyle(
-                              color: isHovered ? const Color(0xFFF26A1B) : Colors.white,
-                              fontFamily: 'gondens', 
+                              color: isHovered
+                                  ? const Color(0xFFF26A1B)
+                                  : Colors.white,
+                              fontFamily: 'gondens',
                               fontWeight: FontWeight.bold,
                               fontSize: 28,
                             ),
                           ),
                         ],
                       ),
-                      
-                      // Spacer pushes the text down into the middle
                       const Spacer(),
-                      
-                      // CENTER AREA: Project Name
+                      // CENTER AREA
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Small decorative line
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
                             width: isHovered ? 40 : 20,
                             height: 3,
-                            color: isHovered ? const Color(0xFFF26A1B) : Colors.white,
+                            color: isHovered
+                                ? const Color(0xFFF26A1B)
+                                : Colors.white,
                             margin: const EdgeInsets.only(bottom: 12),
                           ),
                           Text(
                             projectNames[widget.index % projectNames.length],
-                            textAlign: TextAlign.center, // Centers multi-line text perfectly
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
@@ -136,8 +144,6 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                           ),
                         ],
                       ),
-                      
-                      // Spacer pushes the text up, perfectly balancing it in the center
                       const Spacer(),
                     ],
                   ),

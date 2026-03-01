@@ -3,10 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
-// Ensure these files exist in your project
+// Custom Widget Imports
+import 'package:nithesh/screens/widget/about_section.dart';
 import 'package:nithesh/screens/widget/premium_project_card.dart';
 import 'package:nithesh/screens/widget/skills_popup_content.dart';
 import 'package:nithesh/screens/widget/experience.dart';
+import 'package:nithesh/screens/widget/contact_section.dart';
+import 'package:nithesh/screens/widget/custom_nav_bar.dart';
 
 void main() {
   runApp(
@@ -33,17 +36,67 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   late ScrollController _scrollController;
+  int _currentNavIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  // --- SCROLL SPY LOGIC ---
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    double offset = _scrollController.offset;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    int newIndex = 0;
+
+    if (offset < screenHeight * 0.5) {
+      newIndex = 0; // Home
+    } else if (offset >= screenHeight * 0.5 && offset < screenHeight * 1.8) {
+      newIndex = 1; // About
+    } else if (offset >= screenHeight * 1.8 && offset < screenHeight * 3.5) {
+      newIndex = 2; // Projects
+    } else if (offset >= screenHeight * 3.5 && offset < screenHeight * 4.8) {
+      newIndex = 3; // Skills
+    } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
+      newIndex = 4; // Experience
+    } else {
+      newIndex = 5; // Contact
+    }
+
+    if (newIndex != _currentNavIndex) {
+      setState(() {
+        _currentNavIndex = newIndex;
+      });
+    }
+  }
+
+  // --- SCROLL NAVIGATION LOGIC ---
+  void _scrollTo(double offset) {
+    _scrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 1000),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
+  void _scrollToEnd() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 1200),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -84,10 +137,7 @@ class _LandingPageState extends State<LandingPage> {
                           ),
                         ),
                       ),
-                      Image.asset(
-                        'assets/images/nithesh.png',
-                        fit: BoxFit.contain,
-                      ),
+                      Image.asset('assets/images/nithesh.png', fit: BoxFit.contain),
                       Center(
                         child: FittedBox(
                           fit: BoxFit.contain,
@@ -112,48 +162,12 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
 
-              // SECTION 2: About
+              // SECTION 2: About 
               SliverToBoxAdapter(
-                child: Container(
-                  height: screenHeight,
-                  color: const Color(0xFFF26A1B),
-                  padding: const EdgeInsets.symmetric(horizontal: 60),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "ABOUT",
-                              style: TextStyle(
-                                fontSize: 64,
-                                fontFamily: 'gondens',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              "Nithesh is a visionary designer specializing in high-performance eyewear. This collection represents a fusion of minimalist aesthetics and structural integrity.",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                height: 1.6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Expanded(flex: 2, child: SizedBox()),
-                    ],
-                  ),
-                ),
+                child: AboutSection(screenHeight: screenHeight),
               ),
 
-              // SECTION 3 & 4: Projects and Expanding/Shrinking Skills Popup
+              // SECTION 3 & 4: Projects & Skills
               SliverPersistentHeader(
                 pinned: true,
                 delegate: ProjectSectionDelegate(
@@ -163,20 +177,25 @@ class _LandingPageState extends State<LandingPage> {
                 ),
               ),
 
-              // Animation Spacer (Increased to handle grow + shrink phases)
-              SliverToBoxAdapter(child: SizedBox(height: screenHeight * 4.5)),
+              // Animation Spacer 
+              SliverToBoxAdapter(child: SizedBox(height: screenHeight * 2.5)),
 
-              // SECTION 5: Experience (Revealed after popup shrinks)
+              // SECTION 5: Experience 
               SliverToBoxAdapter(
                 child: ExperienceSection(screenWidth: screenWidth),
               ),
 
-              // Final Footer Spacer
-              SliverToBoxAdapter(child: SizedBox(height: screenHeight * 0.5)),
+              // SECTION 6: Contact & Footer
+              SliverToBoxAdapter(
+                child: ContactSection(
+                  screenWidth: screenWidth, 
+                  screenHeight: screenHeight,
+                ),
+              ),
             ],
           ),
 
-          // 2. FLOATING GLASSES LAYER (Active during Intro/About)
+          // FLOATING GLASSES LAYER 
           AnimatedBuilder(
             animation: _scrollController,
             child: const RepaintBoundary(child: HeroSpecsImage()),
@@ -211,6 +230,22 @@ class _LandingPageState extends State<LandingPage> {
               );
             },
           ),
+
+          // THE FLOATING NAVIGATION BAR
+          if (screenWidth > 600)
+            Positioned(
+              top: 40,
+              right: screenWidth > 1200 ? 80 : 40, 
+              child: CustomNavBar(
+                currentIndex: _currentNavIndex, 
+                onHomeTap: () => _scrollTo(0),
+                onAboutTap: () => _scrollTo(screenHeight),
+                onProjectsTap: () => _scrollTo(screenHeight * 2),
+                onSkillsTap: () => _scrollTo(screenHeight * 4.5), 
+                onExperienceTap: () => _scrollTo(screenHeight * 5.5),
+                onContactTap: _scrollToEnd,
+              ),
+            ),
         ],
       ),
     );
@@ -246,67 +281,77 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
       builder: (context, child) {
         double offset = scrollController.hasClients ? scrollController.offset : 0.0;
         double startAt = screenHeight * 2;
-        
-        // Progress 0.0 -> 3.5 Timeline
         double progress = ((offset - startAt) / screenHeight).clamp(0.0, 3.5);
 
-        // Card Animation Phases
+        // Animation Steps
         double rawDrop = (progress / 0.3).clamp(0.0, 1.0);
         double rawFan = ((progress - 0.3) / 0.3).clamp(0.0, 1.0);
         double rawSplit = ((progress - 0.6) / 0.4).clamp(0.0, 1.0);
         double rawRotate = ((progress - 1.0) / 0.5).clamp(0.0, 1.0);
 
-        // Popup Growth and Shrink Logic
+        // Popup logic
         double growProgress = ((progress - 1.5) / 1.0).clamp(0.0, 1.0);
-        double shrinkProgress = ((progress - 2.5) / 1.0).clamp(0.0, 1.0);
-        double combinedUIFactor = growProgress - shrinkProgress;
-        double smoothUI = Curves.easeInOutCubic.transform(combinedUIFactor.clamp(0.0, 1.0));
+        double slideUpProgress = ((progress - 2.5) / 1.0).clamp(0.0, 1.0);
 
-        // UI Properties
+        // Title starts in center, moves to 60.0 margin on left during split
         double titleXOffset = lerpDouble((screenWidth / 2) - 150, 60.0, Curves.easeInOutCubic.transform(rawSplit))!;
-        double titleOpacity = (1.0 - growProgress).clamp(0.0, 1.0);
-        double yOffset = lerpDouble(screenHeight, 0, smoothUI)!;
-        double currentWidth = lerpDouble(screenWidth * 0.4, screenWidth, smoothUI)!;
-        double currentHeight = lerpDouble(screenHeight * 0.5, screenHeight, smoothUI)!;
-        double currentRadius = lerpDouble(40.0, 0.0, smoothUI)!;
+        double titleOpacity = lerpDouble(1.0, 0.0, (growProgress - 0.8).clamp(0.0, 1.0) / 0.2)!;
+
+        // Positioning for orange popup
+        double entryY = lerpDouble(screenHeight, 0, Curves.fastOutSlowIn.transform(growProgress))!;
+        
+        // FIX: Linear exit to match scroll perfectly and prevent overlaps
+        double exitY = -screenHeight * slideUpProgress; 
+        double finalYOffset = entryY + exitY;
+
+        // FIX: Removed the side-shrinking logic during slideUp to prevent the background gap
+        double currentWidth = lerpDouble(screenWidth * 0.4, screenWidth, growProgress)!;
+        double currentRadius = lerpDouble(40.0, 0.0, growProgress)!;
+
         double cardOpacity = (1.0 - growProgress).clamp(0.0, 1.0);
 
         return Container(
           height: screenHeight,
-          color: Colors.black.withOpacity((1.0 - shrinkProgress).clamp(0.0, 1.0)),
+          color: Colors.black.withOpacity((1.0 - slideUpProgress).clamp(0.0, 1.0)),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              if (titleOpacity > 0)
-                Positioned(
-                  top: 50,
-                  left: titleXOffset,
-                  child: Opacity(
-                    opacity: titleOpacity,
-                    child: const Text(
-                      "PROJECTS",
-                      style: TextStyle(fontSize: 64, fontFamily: 'gondens', fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 10),
+              // 1. PROJECTS TITLE
+              Positioned(
+                top: 50,
+                left: titleXOffset,
+                child: Opacity(
+                  opacity: titleOpacity,
+                  child: const Text(
+                    "PROJECTS",
+                    style: TextStyle(
+                      fontSize: 64,
+                      fontFamily: 'gondens',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 10,
                     ),
                   ),
                 ),
+              ),
 
+              // 2. Cards Layer
               if (cardOpacity > 0.01)
                 Opacity(
                   opacity: cardOpacity,
-                  child: Center(
+                  child: SizedBox.expand( 
                     child: Stack(
                       alignment: Alignment.center,
+                      clipBehavior: Clip.none, 
                       children: List.generate(8, (index) {
-                        double fanTheta = lerpDouble(-math.pi/4, math.pi/4, index/7)!;
+                        double fanTheta = lerpDouble(-math.pi / 4, math.pi / 4, index / 7)!;
                         double currentFanTheta = fanTheta * Curves.easeInOutCubic.transform(rawFan);
                         double dynamicBaseAngle = ((index * (math.pi / 4)) + (math.pi * 0.75)) + (Curves.easeInOut.transform(rawRotate) * math.pi);
-                        
                         double x = lerpDouble(300 * math.sin(currentFanTheta), math.cos(dynamicBaseAngle) * 200, Curves.easeInOutCubic.transform(rawSplit))!;
-                        double y = lerpDouble(-screenHeight * 1.2, 0, Curves.easeInOutCubic.transform(rawDrop))! + 
-                                   lerpDouble(300 - 300 * math.cos(currentFanTheta), math.sin(dynamicBaseAngle) * 200, Curves.easeInOutCubic.transform(rawSplit))!;
-                        
+                        double y = lerpDouble(-screenHeight * 1.2, 0, Curves.easeInOutCubic.transform(rawDrop))! +
+                            lerpDouble(300 - 300 * math.cos(currentFanTheta), math.sin(dynamicBaseAngle) * 200, Curves.easeInOutCubic.transform(rawSplit))!;
                         return Transform(
-                          transform: Matrix4.identity()..translate(x, y)..rotateZ(_lerpAngle(currentFanTheta, dynamicBaseAngle + (math.pi/2), Curves.easeInOutCubic.transform(rawSplit))),
+                          transform: Matrix4.identity()..translate(x, y)..rotateZ(_lerpAngle(currentFanTheta, dynamicBaseAngle + (math.pi / 2), Curves.easeInOutCubic.transform(rawSplit))),
                           alignment: Alignment.center,
                           child: cachedCards[index],
                         );
@@ -315,12 +360,13 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
 
-              if (combinedUIFactor > 0)
+              // 3. Popup
+              if (growProgress > 0)
                 Transform.translate(
-                  offset: Offset(0, yOffset),
+                  offset: Offset(0, finalYOffset),
                   child: Container(
                     width: currentWidth,
-                    height: currentHeight,
+                    height: screenHeight, // Remains full height
                     decoration: BoxDecoration(
                       color: const Color(0xFFF26A1B),
                       borderRadius: BorderRadius.circular(currentRadius),
@@ -338,24 +384,15 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  @override
-  double get maxExtent => screenHeight;
-  @override
-  double get minExtent => screenHeight;
-  @override
-  bool shouldRebuild(covariant ProjectSectionDelegate oldDelegate) => false;
+  @override double get maxExtent => screenHeight;
+  @override double get minExtent => screenHeight;
+  @override bool shouldRebuild(covariant ProjectSectionDelegate oldDelegate) => false;
 }
 
 class HeroSpecsImage extends StatelessWidget {
   const HeroSpecsImage({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/glass.png',
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange),
-    );
+    return Image.asset('assets/images/glass.png', fit: BoxFit.contain, errorBuilder: (c, e, s) => const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange));
   }
 }
