@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:nithesh/screens/widget/achivement_section.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -70,7 +69,6 @@ class _LandingPageState extends State<LandingPage> {
 
     int newIndex = 0;
 
-    // UPDATED THRESHOLDS TO INCLUDE ACHIEVEMENTS
     if (offset < screenHeight * 0.5) {
       newIndex = 0; // Home
     } else if (offset >= screenHeight * 0.5 && offset < screenHeight * 1.8) {
@@ -81,10 +79,8 @@ class _LandingPageState extends State<LandingPage> {
       newIndex = 3; // Skills
     } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
       newIndex = 4; // Experience
-    } else if (offset >= screenHeight * 5.8 && offset < screenHeight * 6.8) {
-      newIndex = 5; // Achievements
     } else {
-      newIndex = 6; // Contact (Shifted from 5 to 6)
+      newIndex = 5; // Contact
     }
 
     if (newIndex != _currentNavIndex) {
@@ -153,16 +149,7 @@ class _LandingPageState extends State<LandingPage> {
                 // SECTION 5: Experience
                 SliverToBoxAdapter(child: ExperienceSection(screenWidth: screenWidth)),
 
-                // --- NEW: SECTION 6: Achievements ---
-                SliverToBoxAdapter(
-                  child: AchievementSection(
-                    screenWidth: screenWidth,
-                    screenHeight: screenHeight,
-                    scrollController: _scrollController,
-                  ),
-                ),
-
-                // SECTION 7: Contact & Footer
+                // SECTION 6: Contact & Footer
                 SliverToBoxAdapter(
                   child: ContactSection(
                     screenWidth: screenWidth,
@@ -227,8 +214,6 @@ class _LandingPageState extends State<LandingPage> {
                     onProjectsTap: () => _scrollTo(screenHeight * 2),
                     onSkillsTap: () => _scrollTo(screenHeight * 4.5),
                     onExperienceTap: () => _scrollTo(screenHeight * 5.5),
-                    // map the new achievements button to its vertical position
-                    onAchievementsTap: () => _scrollTo(screenHeight * 5.8),
                     onContactTap: _scrollToEnd,
                   ),
                 ),

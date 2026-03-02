@@ -20,10 +20,9 @@ class AboutSection extends StatefulWidget {
 
 class _AboutSectionState extends State<AboutSection>
     with TickerProviderStateMixin {
-  // Reveal animation — triggers once when section enters viewport
   late AnimationController _revealCtrl;
-  late AnimationController _floatCtrl; // slow floating decoration
-  late AnimationController _counterCtrl; // animated stat counters
+  late AnimationController _floatCtrl; 
+  late AnimationController _counterCtrl; 
 
   bool _hasRevealed = false;
 
@@ -46,7 +45,6 @@ class _AboutSectionState extends State<AboutSection>
       duration: const Duration(milliseconds: 1600),
     );
 
-    // Auto-start after mount (you can replace with scroll trigger)
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted && !_hasRevealed) {
         _hasRevealed = true;
@@ -82,7 +80,7 @@ class _AboutSectionState extends State<AboutSection>
           // ── RIGHT  25%  black ──────────────────────────────────────────
           Expanded(
             flex: 25,
-            child: _BlackPanel(revealCtrl: _revealCtrl, floatCtrl: _floatCtrl),
+            child: _BlackPanel(revealCtrl: _revealCtrl),
           ),
         ],
       ),
@@ -91,7 +89,7 @@ class _AboutSectionState extends State<AboutSection>
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  ORANGE PANEL
+//  ORANGE PANEL (CONTENT)
 // ══════════════════════════════════════════════════════════════════════════════
 class _OrangePanel extends StatelessWidget {
   final AnimationController revealCtrl;
@@ -120,21 +118,21 @@ class _OrangePanel extends StatelessWidget {
             ),
           ),
 
-          // ── Large decorative "A" watermark ───────────────────────────
+          // ── Large decorative "N" watermark ───────────────────────────
           Positioned(
             right: -30,
-            bottom: -40,
+            bottom: -80,
             child: AnimatedBuilder(
               animation: floatCtrl,
               builder: (_, __) => Transform.translate(
                 offset: Offset(0, floatCtrl.value * 12),
                 child: Text(
-                  'A',
+                  'N',
                   style: TextStyle(
                     fontFamily: 'gondens',
-                    fontSize: 420,
+                    fontSize: 500,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white.withOpacity(0.055),
+                    color: Colors.white.withOpacity(0.04),
                     height: 1,
                   ),
                 ),
@@ -147,43 +145,43 @@ class _OrangePanel extends StatelessWidget {
 
           // ── Main content ──────────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 60),
+            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 80),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Section label
-                _RevealItem(
-                  controller: revealCtrl,
-                  delay: 0.0,
-                  child: Row(
-                    children: [
-                      Container(width: 28, height: 1.5, color: Colors.white60),
-                      const SizedBox(width: 10),
-                      Text(
-                        '02 / ABOUT',
-                        style: TextStyle(
-                          fontFamily: 'Courier',
-                          fontSize: 10,
-                          letterSpacing: 3,
-                          color: Colors.white.withOpacity(0.65),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // _RevealItem(
+                //   controller: revealCtrl,
+                //   delay: 0.0,
+                //   child: Row(
+                //     children: [
+                //       Container(width: 30, height: 2, color: Colors.white),
+                //       const SizedBox(width: 12),
+                //       Text(
+                //         '02 / ABOUT',
+                //         style: TextStyle(
+                //           fontFamily: 'Courier',
+                //           fontSize: 12,
+                //           letterSpacing: 4,
+                //           color: Colors.white.withOpacity(0.8),
+                //           fontWeight: FontWeight.bold,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 20),
 
                 // ABOUT title — split stagger
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.08,
                   child: const Text(
-                    'ABOUT',
+                    'ABOUT ME.',
                     style: TextStyle(
                       fontFamily: 'gondens',
-                      fontSize: 88,
+                      fontSize: 100,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       height: 0.9,
@@ -192,41 +190,41 @@ class _OrangePanel extends StatelessWidget {
                   ),
                 ),
 
-                _RevealItem(
-                  controller: revealCtrl,
-                  delay: 0.14,
-                  child: Text(
-                    'ME.',
-                    style: TextStyle(
-                      fontFamily: 'gondens',
-                      fontSize: 88,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white.withOpacity(0.22),
-                      height: 0.9,
-                      letterSpacing: -2,
-                    ),
-                  ),
-                ),
+                // _RevealItem(
+                //   controller: revealCtrl,
+                //   delay: 0.14,
+                //   child: Text(
+                //     'ME.',
+                //     style: TextStyle(
+                //       fontFamily: 'gondens',
+                //       fontSize: 100,
+                //       fontWeight: FontWeight.w900,
+                //       color: Colors.white.withOpacity(0.25),
+                //       height: 0.9,
+                //       letterSpacing: -2,
+                //     ),
+                //   ),
+                // ),
 
                 const SizedBox(height: 40),
 
-                // Description
+                // Updated Professional Description
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.22,
                   child: SizedBox(
-                    width: 540,
+                    width: 600,
                     child: Text(
-                      "Nithesh is a visionary designer specializing in high-performance "
-                      "eyewear. This collection represents a fusion of minimalist "
-                      "aesthetics and structural integrity — crafted for those who "
-                      "see the world differently.",
+                      "I am a creative frontend developer passionate about crafting immersive, "
+                      "high-performance digital experiences. Bridging the gap between sleek "
+                      "design and robust engineering, I build pixel-perfect interfaces that "
+                      "feel alive and intuitive.",
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 18,
                         fontFamily: 'Courier',
-                        color: Colors.white.withOpacity(0.82),
-                        height: 1.75,
-                        letterSpacing: 0.3,
+                        color: Colors.white.withOpacity(0.85),
+                        height: 1.8,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
@@ -234,7 +232,7 @@ class _OrangePanel extends StatelessWidget {
 
                 const Spacer(),
 
-                // Stats row
+                // Improved Stats row with vertical dividers
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.38,
@@ -242,25 +240,25 @@ class _OrangePanel extends StatelessWidget {
                     children: [
                       _AnimatedStat(
                         label: 'PROJECTS',
-                        targetValue:8,
+                        targetValue: 8,
                         suffix: '+',
                         controller: counterCtrl,
                       ),
-                      const SizedBox(width: 48),
+                      const SizedBox(width: 40),
+                      Container(width: 1, height: 50, color: Colors.white30), // Vertical Divider
+                      const SizedBox(width: 40),
                       _AnimatedStat(
-                        label: 'EXPERIENCE',
+                        label: 'MONTHS EXPERIENCE',
                         targetValue: 8,
-                        suffix: ' Months',
+                        suffix: '',
                         controller: counterCtrl,
                         delay: 0.15,
                       ),
-                     
-                     
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 36),
+                const SizedBox(height: 48),
 
                 // CTA row
                 _RevealItem(
@@ -268,9 +266,7 @@ class _OrangePanel extends StatelessWidget {
                   delay: 0.48,
                   child: Row(
                     children: [
-                      _GhostButton(label: 'VIEW RESUME →'),
-                      const SizedBox(width: 16),
-                     
+                      const _GhostButton(label: 'VIEW RESUME →'),
                     ],
                   ),
                 ),
@@ -284,13 +280,12 @@ class _OrangePanel extends StatelessWidget {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  BLACK PANEL
+//  BLACK PANEL (IMAGE)
 // ══════════════════════════════════════════════════════════════════════════════
 class _BlackPanel extends StatelessWidget {
   final AnimationController revealCtrl;
-  final AnimationController floatCtrl;
 
-  const _BlackPanel({required this.revealCtrl, required this.floatCtrl});
+  const _BlackPanel({required this.revealCtrl});
 
   @override
   Widget build(BuildContext context) {
@@ -323,53 +318,12 @@ class _BlackPanel extends StatelessWidget {
           // Subtle dot pattern
           Positioned.fill(child: CustomPaint(painter: _BlackPanelDots())),
 
-          // Content
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 60),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top — floating skills tags
-                _RevealItem(
-                  controller: revealCtrl,
-                  delay: 0.30,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                     
-                      const SizedBox(height: 16),
-                      ...[
-                        
-                      ].asMap().entries.map(
-                        (e) => _SkillTag(
-                          label: e.value,
-                          index: e.key,
-                          revealCtrl: revealCtrl,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                // Middle — floating circle graphic
-                _RevealItem(
-                  controller: revealCtrl,
-                  delay: 0.42,
-                  child: AnimatedBuilder(
-                    animation: floatCtrl,
-                    builder: (_, __) => Center(
-                      child: Transform.translate(
-                        offset: Offset(0, floatCtrl.value * 8 - 4),
-                        child: _OrbitGraphic(),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const Spacer(),
-              ],
+          // Image Reveal
+          Center(
+            child: _RevealItem(
+              controller: revealCtrl,
+              delay: 0.4, // delayed so it appears after the text
+              child: const _HoverImageProfile(),
             ),
           ),
         ],
@@ -382,10 +336,92 @@ class _BlackPanel extends StatelessWidget {
 //  SMALL COMPONENTS
 // ══════════════════════════════════════════════════════════════════════════════
 
+/// Profile Image with B&W to Color hover effect
+class _HoverImageProfile extends StatefulWidget {
+  const _HoverImageProfile();
+
+  @override
+  State<_HoverImageProfile> createState() => _HoverImageProfileState();
+}
+
+class _HoverImageProfileState extends State<_HoverImageProfile> {
+  bool _isHovered = false;
+
+  static const _greyscaleMatrix = <double>[
+    0.2126, 0.7152, 0.0722, 0, 0,
+    0.2126, 0.7152, 0.0722, 0, 0,
+    0.2126, 0.7152, 0.0722, 0, 0,
+    0,      0,      0,      1, 0,
+  ];
+
+  static const _colorMatrix = <double>[
+    1, 0, 0, 0, 0,
+    0, 1, 0, 0, 0,
+    0, 0, 1, 0, 0,
+    0, 0, 0, 1, 0,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+        width: 280,
+        height: 420,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _isHovered ? _kOrange : Colors.white24,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _isHovered ? _kOrange.withOpacity(0.3) : Colors.black45,
+              blurRadius: _isHovered ? 30 : 15,
+              spreadRadius: 2,
+            )
+          ],
+        ),
+        // Clip to ensure the image doesn't overflow the sharp borders
+        child: ClipRect(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            // Slight zoom-in effect on hover
+            transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+            transformAlignment: Alignment.center,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0, end: _isHovered ? 1.0 : 0.0),
+              duration: const Duration(milliseconds: 400),
+              builder: (context, value, child) {
+                // Interpolate between greyscale and full color matrices
+                List<double> currentMatrix = List.generate(20, (index) {
+                  return _greyscaleMatrix[index] + 
+                        (_colorMatrix[index] - _greyscaleMatrix[index]) * value;
+                });
+
+                return ColorFiltered(
+                  colorFilter: ColorFilter.matrix(currentMatrix),
+                  child: Image.asset(
+                    'assets/images/nithesh1.png',
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Slides and fades in from below with a delay
 class _RevealItem extends StatelessWidget {
   final AnimationController controller;
-  final double delay; // 0..1
+  final double delay; 
   final Widget child;
 
   const _RevealItem({
@@ -399,15 +435,12 @@ class _RevealItem extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) {
-        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(
-          0.0,
-          1.0,
-        );
+        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
         final t = Curves.easeOutCubic.transform(raw);
         return Opacity(
           opacity: t,
           child: Transform.translate(
-            offset: Offset(0, (1 - t) * 28),
+            offset: Offset(0, (1 - t) * 30),
             child: child,
           ),
         );
@@ -437,10 +470,7 @@ class _AnimatedStat extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) {
-        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(
-          0.0,
-          1.0,
-        );
+        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
         final t = Curves.easeOutCubic.transform(raw);
         final val = (targetValue * t).round();
         return Column(
@@ -450,21 +480,21 @@ class _AnimatedStat extends StatelessWidget {
               '$val$suffix',
               style: const TextStyle(
                 fontFamily: 'gondens',
-                fontSize: 42,
+                fontSize: 60, // Made stats larger
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
                 height: 1,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
                 fontFamily: 'Courier',
-                fontSize: 8.5,
+                fontSize: 10,
                 letterSpacing: 2.5,
-                color: Colors.white.withOpacity(0.55),
-                fontWeight: FontWeight.w600,
+                color: Colors.white.withOpacity(0.6),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
@@ -493,208 +523,25 @@ class _GhostButtonState extends State<_GhostButton> {
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16), // Made button larger
         decoration: BoxDecoration(
-          color: (_hovered
-                    ? Colors.white.withOpacity(0.12)
-                    : Colors.transparent),
+          color: _hovered ? Colors.white : Colors.black,
           border: Border.all(
-            color: Colors.white.withOpacity(_hovered ? 1.0 : 0.4),
-            width: 1,
+            color: _hovered ? Colors.white : Colors.black,
+            width: 1.5,
           ),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Text(
           widget.label,
           style: TextStyle(
             fontFamily: 'Courier',
-            fontSize: 10,
-            letterSpacing: 2,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
+            fontSize: 12,
+            letterSpacing: 3,
+            fontWeight: FontWeight.w900,
+            color: _hovered ? Colors.black : Colors.white,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// ── Skill tag (right panel) ───────────────────────────────────────────────────
-class _SkillTag extends StatefulWidget {
-  final String label;
-  final int index;
-  final AnimationController revealCtrl;
-
-  const _SkillTag({
-    required this.label,
-    required this.index,
-    required this.revealCtrl,
-  });
-
-  @override
-  State<_SkillTag> createState() => _SkillTagState();
-}
-
-class _SkillTagState extends State<_SkillTag> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final delay = 0.32 + widget.index * 0.05;
-    return AnimatedBuilder(
-      animation: widget.revealCtrl,
-      builder: (_, __) {
-        final raw = ((widget.revealCtrl.value - delay) / (1.0 - delay)).clamp(
-          0.0,
-          1.0,
-        );
-        final t = Curves.easeOutCubic.transform(raw);
-        return Opacity(
-          opacity: t,
-          child: Transform.translate(
-            offset: Offset((1 - t) * -20, 0),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              onEnter: (_) => setState(() => _hovered = true),
-              onExit: (_) => setState(() => _hovered = false),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: _hovered
-                      ? _kOrange.withOpacity(0.18)
-                      : Colors.white.withOpacity(0.04),
-                  border: Border.all(
-                    color: _hovered
-                        ? _kOrange.withOpacity(0.5)
-                        : Colors.white.withOpacity(0.08),
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 5,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _hovered ? _kOrange : _kOrange.withOpacity(0.4),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      widget.label,
-                      style: TextStyle(
-                        fontFamily: 'Courier',
-                        fontSize: 10,
-                        letterSpacing: 1.2,
-                        color: _hovered
-                            ? Colors.white
-                            : Colors.white.withOpacity(0.6),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ── Pulsing availability dot ──────────────────────────────────────────────────
-class _PulseDot extends StatefulWidget {
-  @override
-  State<_PulseDot> createState() => _PulseDotState();
-}
-
-class _PulseDotState extends State<_PulseDot>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _c;
-
-  @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (_, __) => Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 12 + _c.value * 6,
-            height: 12 + _c.value * 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF00DD88).withOpacity((1 - _c.value) * 0.3),
-            ),
-          ),
-          Container(
-            width: 7,
-            height: 7,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF00DD88),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── Orbit graphic ─────────────────────────────────────────────────────────────
-class _OrbitGraphic extends StatefulWidget {
-  @override
-  State<_OrbitGraphic> createState() => _OrbitGraphicState();
-}
-
-class _OrbitGraphicState extends State<_OrbitGraphic>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _c;
-
-  @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(seconds: 6))
-      ..repeat();
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (_, __) => CustomPaint(
-        size: const Size(90, 90),
-        painter: _OrbitPainter(phase: _c.value * 2 * math.pi),
       ),
     );
   }
@@ -710,7 +557,6 @@ class _OrangeTexturePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Flowing wavy lines for texture
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.5
@@ -721,8 +567,7 @@ class _OrangeTexturePainter extends CustomPainter {
       final path = Path();
       path.moveTo(0, y0);
       for (double x = 0; x <= size.width; x += 4) {
-        final y =
-            y0 +
+        final y = y0 +
             math.sin(
                   (x / size.width) * 4 * math.pi + phase * math.pi * 2 + row,
                 ) *
@@ -743,13 +588,11 @@ class _DiagonalLinePainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white.withOpacity(0.06)
       ..strokeWidth = 1;
-    // Single dramatic diagonal
     canvas.drawLine(
       Offset(size.width * 0.55, 0),
       Offset(size.width, size.height * 0.45),
       paint,
     );
-    // Parallel offset
     canvas.drawLine(
       Offset(size.width * 0.60, 0),
       Offset(size.width, size.height * 0.38),
@@ -777,73 +620,4 @@ class _BlackPanelDots extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
-}
-
-class _OrbitPainter extends CustomPainter {
-  final double phase;
-  _OrbitPainter({required this.phase});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cx = size.width / 2;
-    final cy = size.height / 2;
-    const r = 32.0;
-
-    // Orbit ring
-    canvas.drawCircle(
-      Offset(cx, cy),
-      r,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.8
-        ..color = _kOrange.withOpacity(0.25),
-    );
-
-    // Inner ring
-    canvas.drawCircle(
-      Offset(cx, cy),
-      r * 0.55,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.5
-        ..color = Colors.white.withOpacity(0.10),
-    );
-
-    // Center dot
-    canvas.drawCircle(
-      Offset(cx, cy),
-      5,
-      Paint()..color = _kOrange.withOpacity(0.8),
-    );
-    canvas.drawCircle(Offset(cx, cy), 3, Paint()..color = Colors.white);
-
-    // Orbiting particle
-    final px = cx + math.cos(phase) * r;
-    final py = cy + math.sin(phase) * r;
-
-    // Trail
-    for (int i = 0; i < 8; i++) {
-      final trailPhase = phase - i * 0.22;
-      final tx = cx + math.cos(trailPhase) * r;
-      final ty = cy + math.sin(trailPhase) * r;
-      canvas.drawCircle(
-        Offset(tx, ty),
-        2.5 - i * 0.28,
-        Paint()..color = _kOrange.withOpacity((1 - i / 8) * 0.5),
-      );
-    }
-
-    // Main particle
-    canvas.drawCircle(
-      Offset(px, py),
-      3.5,
-      Paint()
-        ..color = _kOrange
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
-    );
-    canvas.drawCircle(Offset(px, py), 2, Paint()..color = Colors.white);
-  }
-
-  @override
-  bool shouldRepaint(_OrbitPainter old) => old.phase != phase;
 }

@@ -21,7 +21,6 @@ class CustomNavBar extends StatefulWidget {
   final VoidCallback onProjectsTap;
   final VoidCallback onSkillsTap;
   final VoidCallback onExperienceTap;
-  final VoidCallback onAchievementsTap; // <-- NEW
   final VoidCallback onContactTap;
 
   const CustomNavBar({
@@ -32,7 +31,6 @@ class CustomNavBar extends StatefulWidget {
     required this.onProjectsTap,
     required this.onSkillsTap,
     required this.onExperienceTap,
-    required this.onAchievementsTap, // <-- NEW
     required this.onContactTap,
   });
 
@@ -50,7 +48,7 @@ class _CustomNavBarState extends State<CustomNavBar>
   int _burstIndex = -1;
   int _hoveredIndex = -1;
 
-  static const _total = 7; // <-- CHANGED from 6 to 7
+  static const _total = 6;
 
   @override
   void initState() {
@@ -105,7 +103,6 @@ class _CustomNavBarState extends State<CustomNavBar>
         widget.onProjectsTap,
         widget.onSkillsTap,
         widget.onExperienceTap,
-        widget.onAchievementsTap, // <-- NEW callback mapped here
         widget.onContactTap,
       ];
 
@@ -115,7 +112,6 @@ class _CustomNavBarState extends State<CustomNavBar>
     Icons.grid_view_rounded,
     Icons.bolt_rounded,
     Icons.work_rounded,
-    Icons.emoji_events_rounded, // <-- NEW icon (Trophy)
     Icons.mail_rounded,
   ];
 
@@ -141,17 +137,17 @@ class _CustomNavBarState extends State<CustomNavBar>
 
         return Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
+            // borderRadius: BorderRadius.circular(32),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(32),
+            // borderRadius: BorderRadius.circular(32),
             child: BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 40, sigmaY: 40),
               child: Container(
                 width: 30,          // ← ultra-thin
                 decoration: BoxDecoration(
                   color: _kBg.withOpacity(0.97),
-                  borderRadius: BorderRadius.circular(32),
+                  // borderRadius: BorderRadius.circular(32),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.055),
                     width: 1,
@@ -168,16 +164,20 @@ class _CustomNavBarState extends State<CustomNavBar>
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(_total, (i) {
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(_total * 2 - 1, (i) {
+                        if (i.isOdd) {
+                          return const SizedBox(height: 16);
+                        }
+                        final itemIndex = i ~/ 2;
                         return _SeismicItem(
-                          icon: _icons[i],
-                          isSelected: widget.currentIndex == i,
-                          isHovered: _hoveredIndex == i,
-                          ampValue: amps[i],
-                          onTap: () => _onItemTap(i),
-                          onHover: (h) => _onHover(i, h),
+                          icon: _icons[itemIndex],
+                          isSelected: widget.currentIndex == itemIndex,
+                          isHovered: _hoveredIndex == itemIndex,
+                          ampValue: amps[itemIndex],
+                          onTap: () => _onItemTap(itemIndex),
+                          onHover: (h) => _onHover(itemIndex, h),
                         );
                       }),
                     ),
@@ -428,7 +428,7 @@ class _SeismicItemState extends State<_SeismicItem>
               scale: _pressAnim.value,
               child: SizedBox(
                 width: 30,
-                height: 44,
+                height: 100,
                 child: Center(
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 380),
@@ -496,8 +496,7 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
               onProjectsTap:     () => setState(() => _index = 2),
               onSkillsTap:       () => setState(() => _index = 3),
               onExperienceTap:   () => setState(() => _index = 4),
-              onAchievementsTap: () => setState(() => _index = 5), // <-- NEW in demo
-              onContactTap:      () => setState(() => _index = 6), // <-- Shifted to 6
+              onContactTap:      () => setState(() => _index = 5),
             ),
           ),
 
@@ -505,8 +504,7 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
           Expanded(
             child: Center(
               child: Text(
-                // <-- NEW string array with Achievements added
-                ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Achievements', 'Contact'][_index],
+                ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Contact'][_index],
                 style: const TextStyle(
                   fontFamily: 'Courier',
                   color: Color(0xFFF26A1B),
