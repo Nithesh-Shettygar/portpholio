@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nithesh/screens/home_page.dart';
+import 'package:nithesh/loading_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Georgia', // Or your preferred font
       ),
-      home: const LandingPage(),
+      home: const LoadingPage(),
     );
   }
 }

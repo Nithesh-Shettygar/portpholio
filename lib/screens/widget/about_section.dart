@@ -8,7 +8,6 @@ import 'dart:math' as math;
 const _kOrange = Color(0xFFF26A1B);
 const _kOrangeLo = Color(0xFFFF9A5C);
 const _kBlack = Color(0xFF080808);
-const _kCream = Color(0xFFF2F2F2);
 
 class AboutSection extends StatefulWidget {
   final double screenHeight;
@@ -478,9 +477,7 @@ class _AnimatedStat extends StatelessWidget {
 // ── Ghost button ──────────────────────────────────────────────────────────────
 class _GhostButton extends StatefulWidget {
   final String label;
-  final bool filled;
-  const _GhostButton({required this.label, this.filled = false});
-
+  const _GhostButton({required this.label});
   @override
   State<_GhostButton> createState() => _GhostButtonState();
 }
@@ -498,9 +495,7 @@ class _GhostButtonState extends State<_GhostButton> {
         duration: const Duration(milliseconds: 220),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: widget.filled
-              ? (_hovered ? Colors.white : _kBlack)
-              : (_hovered
+          color: (_hovered
                     ? Colors.white.withOpacity(0.12)
                     : Colors.transparent),
           border: Border.all(
@@ -516,9 +511,7 @@ class _GhostButtonState extends State<_GhostButton> {
             fontSize: 10,
             letterSpacing: 2,
             fontWeight: FontWeight.w700,
-            color: widget.filled
-                ? (_hovered ? _kOrange : Colors.white)
-                : Colors.white,
+            color: Colors.white,
           ),
         ),
       ),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:nithesh/screens/widget/achivement_section.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
 // Custom Widget Imports
+import 'package:nithesh/screens/widget/hero_section.dart';
 import 'package:nithesh/screens/widget/about_section.dart';
 import 'package:nithesh/screens/widget/premium_project_card.dart';
 import 'package:nithesh/screens/widget/skills_popup_content.dart';
 import 'package:nithesh/screens/widget/experience.dart';
+// --- NEW IMPORT HERE ---
 import 'package:nithesh/screens/widget/contact_section.dart';
 import 'package:nithesh/screens/widget/custom_nav_bar.dart';
 
@@ -38,6 +41,10 @@ class _LandingPageState extends State<LandingPage> {
   late ScrollController _scrollController;
   int _currentNavIndex = 0;
 
+  // --- CURSOR STATE ---
+  final ValueNotifier<Offset> _mousePos = ValueNotifier<Offset>(Offset.zero);
+  final ValueNotifier<bool> _isHovering = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +56,8 @@ class _LandingPageState extends State<LandingPage> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _mousePos.dispose();
+    _isHovering.dispose();
     super.dispose();
   }
 
@@ -61,6 +70,7 @@ class _LandingPageState extends State<LandingPage> {
 
     int newIndex = 0;
 
+    // UPDATED THRESHOLDS TO INCLUDE ACHIEVEMENTS
     if (offset < screenHeight * 0.5) {
       newIndex = 0; // Home
     } else if (offset >= screenHeight * 0.5 && offset < screenHeight * 1.8) {
@@ -71,8 +81,10 @@ class _LandingPageState extends State<LandingPage> {
       newIndex = 3; // Skills
     } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
       newIndex = 4; // Experience
+    } else if (offset >= screenHeight * 5.8 && offset < screenHeight * 6.8) {
+      newIndex = 5; // Achievements
     } else {
-      newIndex = 5; // Contact
+      newIndex = 6; // Contact (Shifted from 5 to 6)
     }
 
     if (newIndex != _currentNavIndex) {
@@ -106,152 +118,151 @@ class _LandingPageState extends State<LandingPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      body: Stack(
-        children: [
-          CustomScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            slivers: [
-              // SECTION 1: Intro
-              SliverToBoxAdapter(
-                child: Container(
-                  height: screenHeight,
-                  color: const Color(0xFFF2F2F2),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Center(
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: const Text(
-                            'NITHESH',
-                            style: TextStyle(
-                              fontFamily: 'gondens',
-                              fontSize: 350,
-                              letterSpacing: 30,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Image.asset('assets/images/nithesh.png', fit: BoxFit.contain),
-                      Center(
-                        child: FittedBox(
-                          fit: BoxFit.contain,
-                          child: Text(
-                            'NITHESH',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'gondens',
-                              fontSize: 350,
-                              letterSpacing: 30,
-                              fontWeight: FontWeight.w300,
-                              foreground: Paint()
-                                ..style = PaintingStyle.stroke
-                                ..strokeWidth = 0.3
-                                ..color = const Color(0xFFF2F2F2),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+      body: MouseRegion(
+        cursor: SystemMouseCursors.none,
+        onEnter: (_) => _isHovering.value = true,
+        onExit: (_) => _isHovering.value = false,
+        onHover: (event) => _mousePos.value = event.position,
+        child: Stack(
+          children: [
+            CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              slivers: [
+                // SECTION 1: Intro
+                SliverToBoxAdapter(child: HeroSection(screenHeight: screenHeight)),
+
+                // SECTION 2: About
+                SliverToBoxAdapter(child: AboutSection(screenHeight: screenHeight)),
+
+                // SECTION 3 & 4: Projects & Skills
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: ProjectSectionDelegate(
+                    screenHeight: screenHeight,
+                    screenWidth: screenWidth,
+                    scrollController: _scrollController,
                   ),
                 ),
-              ),
 
-              // SECTION 2: About 
-              SliverToBoxAdapter(
-                child: AboutSection(screenHeight: screenHeight),
-              ),
+                // Animation Spacer
+                SliverToBoxAdapter(child: SizedBox(height: screenHeight * 2.5)),
 
-              // SECTION 3 & 4: Projects & Skills
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: ProjectSectionDelegate(
-                  screenHeight: screenHeight,
-                  screenWidth: screenWidth,
-                  scrollController: _scrollController,
+                // SECTION 5: Experience
+                SliverToBoxAdapter(child: ExperienceSection(screenWidth: screenWidth)),
+
+                // --- NEW: SECTION 6: Achievements ---
+                SliverToBoxAdapter(
+                  child: AchievementSection(
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                    scrollController: _scrollController,
+                  ),
                 ),
-              ),
 
-              // Animation Spacer 
-              SliverToBoxAdapter(child: SizedBox(height: screenHeight * 2.5)),
-
-              // SECTION 5: Experience 
-              SliverToBoxAdapter(
-                child: ExperienceSection(screenWidth: screenWidth),
-              ),
-
-              // SECTION 6: Contact & Footer
-              SliverToBoxAdapter(
-                child: ContactSection(
-                  screenWidth: screenWidth, 
-                  screenHeight: screenHeight,
+                // SECTION 7: Contact & Footer
+                SliverToBoxAdapter(
+                  child: ContactSection(
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          // FLOATING GLASSES LAYER 
-          AnimatedBuilder(
-            animation: _scrollController,
-            child: const RepaintBoundary(child: HeroSpecsImage()),
-            builder: (context, child) {
-              double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
-              double progressToAbout = (offset / screenHeight).clamp(0.0, 1.0);
-              double progressThroughAbout = ((offset - screenHeight) / screenHeight).clamp(0.0, 1.0);
+            // FLOATING GLASSES LAYER (unchanged)
+            AnimatedBuilder(
+              animation: _scrollController,
+              child: const RepaintBoundary(child: HeroSpecsImage()),
+              builder: (context, child) {
+                double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
+                double progressToAbout = (offset / screenHeight).clamp(0.0, 1.0);
+                double progressThroughAbout = ((offset - screenHeight) / screenHeight).clamp(0.0, 1.0);
 
-              double smoothIntro = Curves.easeInOutCubic.transform(progressToAbout);
-              double horizontalShift = lerpDouble(0.0, 1.0, smoothIntro)!;
-              double verticalShift = lerpDouble(-0.2, 0.0, smoothIntro)!;
-              double targetRotation = (math.pi / 2) * smoothIntro;
-              double dynamicWidth = lerpDouble(200, 500, smoothIntro)!;
-              double scrollUpOffset = progressThroughAbout * -screenHeight;
+                double smoothIntro = Curves.easeInOutCubic.transform(progressToAbout);
+                const double startRotation = -7 * (math.pi / 180);
+                const double endRotation = math.pi / 2;
+                double targetRotation = lerpDouble(startRotation, endRotation, smoothIntro)!;
+                double horizontalShift = lerpDouble(0.0, 1.0, smoothIntro)!;
+                double verticalShift = lerpDouble(-0.22, 0.0, smoothIntro)!;
+                double dynamicWidth = lerpDouble(180, 500, smoothIntro)!;
+                double scrollUpOffset = progressThroughAbout * -screenHeight;
 
-              if (progressThroughAbout >= 1.0) return const SizedBox.shrink();
+                if (progressThroughAbout >= 1.0) return const SizedBox.shrink();
 
-              return IgnorePointer(
-                child: Transform.translate(
-                  offset: Offset(0, scrollUpOffset),
-                  child: Align(
-                    alignment: Alignment(horizontalShift, verticalShift),
-                    child: SizedBox(
-                      width: dynamicWidth,
-                      child: Transform.rotate(
-                        angle: targetRotation,
-                        child: child,
+                return IgnorePointer(
+                  child: Transform.translate(
+                    offset: Offset(0, scrollUpOffset),
+                    child: Align(
+                      alignment: Alignment(horizontalShift, verticalShift),
+                      child: SizedBox(
+                        width: dynamicWidth,
+                        child: Transform.rotate(
+                          angle: targetRotation,
+                          child: child,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-
-          // THE FLOATING NAVIGATION BAR
-          if (screenWidth > 600)
-            Positioned(
-              top: 40,
-              right: screenWidth > 1200 ? 80 : 40, 
-              child: CustomNavBar(
-                currentIndex: _currentNavIndex, 
-                onHomeTap: () => _scrollTo(0),
-                onAboutTap: () => _scrollTo(screenHeight),
-                onProjectsTap: () => _scrollTo(screenHeight * 2),
-                onSkillsTap: () => _scrollTo(screenHeight * 4.5), 
-                onExperienceTap: () => _scrollTo(screenHeight * 5.5),
-                onContactTap: _scrollToEnd,
-              ),
+                );
+              },
             ),
-        ],
+
+            // THE FLOATING NAVIGATION BAR
+            if (screenWidth > 600)
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  width: 80,
+                  height: screenHeight,
+                  alignment: Alignment.center,
+                  child: CustomNavBar(
+                    currentIndex: _currentNavIndex,
+                    onHomeTap: () => _scrollTo(0),
+                    onAboutTap: () => _scrollTo(screenHeight),
+                    onProjectsTap: () => _scrollTo(screenHeight * 2),
+                    onSkillsTap: () => _scrollTo(screenHeight * 4.5),
+                    onExperienceTap: () => _scrollTo(screenHeight * 5.5),
+                    // map the new achievements button to its vertical position
+                    onAchievementsTap: () => _scrollTo(screenHeight * 5.8),
+                    onContactTap: _scrollToEnd,
+                  ),
+                ),
+              ),
+
+            // 2. THE CUSTOM CURSOR LAYER
+            ValueListenableBuilder<bool>(
+              valueListenable: _isHovering,
+              builder: (context, isHovering, child) {
+                if (!isHovering) return const SizedBox.shrink();
+                return ValueListenableBuilder<Offset>(
+                  valueListenable: _mousePos,
+                  builder: (context, pos, child) {
+                    return AnimatedPositioned(
+                      duration: const Duration(milliseconds: 50),
+                      curve: Curves.easeOutCubic,
+                      left: pos.dx - 15,
+                      top: pos.dy - 15, 
+                      child: const IgnorePointer(
+                        child: CustomCursorWidget(),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
+// --- PROJECT SECTION DELEGATE ---
 class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
   final double screenHeight;
   final double screenWidth;
@@ -269,8 +280,11 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
 
   double _lerpAngle(double a, double b, double t) {
     double delta = (b - a) % (2 * math.pi);
-    if (delta > math.pi) delta -= 2 * math.pi;
-    else if (delta < -math.pi) delta += 2 * math.pi;
+    if (delta > math.pi) {
+      delta -= 2 * math.pi;
+    } else if (delta < -math.pi) {
+      delta += 2 * math.pi;
+    }
     return a + delta * t;
   }
 
@@ -283,28 +297,21 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
         double startAt = screenHeight * 2;
         double progress = ((offset - startAt) / screenHeight).clamp(0.0, 3.5);
 
-        // Animation Steps
         double rawDrop = (progress / 0.3).clamp(0.0, 1.0);
         double rawFan = ((progress - 0.3) / 0.3).clamp(0.0, 1.0);
         double rawSplit = ((progress - 0.6) / 0.4).clamp(0.0, 1.0);
         double rawRotate = ((progress - 1.0) / 0.5).clamp(0.0, 1.0);
 
-        // Popup logic
         double growProgress = ((progress - 1.5) / 1.0).clamp(0.0, 1.0);
         double slideUpProgress = ((progress - 2.5) / 1.0).clamp(0.0, 1.0);
 
-        // Title starts in center, moves to 60.0 margin on left during split
         double titleXOffset = lerpDouble((screenWidth / 2) - 150, 60.0, Curves.easeInOutCubic.transform(rawSplit))!;
         double titleOpacity = lerpDouble(1.0, 0.0, (growProgress - 0.8).clamp(0.0, 1.0) / 0.2)!;
 
-        // Positioning for orange popup
         double entryY = lerpDouble(screenHeight, 0, Curves.fastOutSlowIn.transform(growProgress))!;
-        
-        // FIX: Linear exit to match scroll perfectly and prevent overlaps
-        double exitY = -screenHeight * slideUpProgress; 
+        double exitY = -screenHeight * slideUpProgress;
         double finalYOffset = entryY + exitY;
 
-        // FIX: Removed the side-shrinking logic during slideUp to prevent the background gap
         double currentWidth = lerpDouble(screenWidth * 0.4, screenWidth, growProgress)!;
         double currentRadius = lerpDouble(40.0, 0.0, growProgress)!;
 
@@ -316,7 +323,6 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // 1. PROJECTS TITLE
               Positioned(
                 top: 50,
                 left: titleXOffset,
@@ -335,23 +341,39 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                 ),
               ),
 
-              // 2. Cards Layer
               if (cardOpacity > 0.01)
                 Opacity(
                   opacity: cardOpacity,
-                  child: SizedBox.expand( 
+                  child: SizedBox.expand(
                     child: Stack(
                       alignment: Alignment.center,
-                      clipBehavior: Clip.none, 
+                      clipBehavior: Clip.none,
                       children: List.generate(8, (index) {
                         double fanTheta = lerpDouble(-math.pi / 4, math.pi / 4, index / 7)!;
                         double currentFanTheta = fanTheta * Curves.easeInOutCubic.transform(rawFan);
-                        double dynamicBaseAngle = ((index * (math.pi / 4)) + (math.pi * 0.75)) + (Curves.easeInOut.transform(rawRotate) * math.pi);
-                        double x = lerpDouble(300 * math.sin(currentFanTheta), math.cos(dynamicBaseAngle) * 200, Curves.easeInOutCubic.transform(rawSplit))!;
+                        double dynamicBaseAngle = ((index * (math.pi / 4)) + (math.pi * 0.75)) +
+                            (Curves.easeInOut.transform(rawRotate) * math.pi);
+                        double x = lerpDouble(
+                          300 * math.sin(currentFanTheta),
+                          math.cos(dynamicBaseAngle) * 200,
+                          Curves.easeInOutCubic.transform(rawSplit),
+                        )!;
                         double y = lerpDouble(-screenHeight * 1.2, 0, Curves.easeInOutCubic.transform(rawDrop))! +
-                            lerpDouble(300 - 300 * math.cos(currentFanTheta), math.sin(dynamicBaseAngle) * 200, Curves.easeInOutCubic.transform(rawSplit))!;
+                            lerpDouble(
+                              300 - 300 * math.cos(currentFanTheta),
+                              math.sin(dynamicBaseAngle) * 200,
+                              Curves.easeInOutCubic.transform(rawSplit),
+                            )!;
                         return Transform(
-                          transform: Matrix4.identity()..translate(x, y)..rotateZ(_lerpAngle(currentFanTheta, dynamicBaseAngle + (math.pi / 2), Curves.easeInOutCubic.transform(rawSplit))),
+                          transform: Matrix4.identity()
+                            ..translate(x, y)
+                            ..rotateZ(
+                              _lerpAngle(
+                                currentFanTheta,
+                                dynamicBaseAngle + (math.pi / 2),
+                                Curves.easeInOutCubic.transform(rawSplit),
+                              ),
+                            ),
                           alignment: Alignment.center,
                           child: cachedCards[index],
                         );
@@ -360,13 +382,12 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
 
-              // 3. Popup
               if (growProgress > 0)
                 Transform.translate(
                   offset: Offset(0, finalYOffset),
                   child: Container(
                     width: currentWidth,
-                    height: screenHeight, // Remains full height
+                    height: screenHeight,
                     decoration: BoxDecoration(
                       color: const Color(0xFFF26A1B),
                       borderRadius: BorderRadius.circular(currentRadius),
@@ -384,15 +405,65 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  @override double get maxExtent => screenHeight;
-  @override double get minExtent => screenHeight;
-  @override bool shouldRebuild(covariant ProjectSectionDelegate oldDelegate) => false;
+  @override
+  double get maxExtent => screenHeight;
+  @override
+  double get minExtent => screenHeight;
+  @override
+  bool shouldRebuild(covariant ProjectSectionDelegate oldDelegate) => false;
 }
+
+// --- UTILITY WIDGETS ---
 
 class HeroSpecsImage extends StatelessWidget {
   const HeroSpecsImage({super.key});
   @override
   Widget build(BuildContext context) {
-    return Image.asset('assets/images/glass.png', fit: BoxFit.contain, errorBuilder: (c, e, s) => const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange));
+    return Image.asset(
+      'assets/images/glass.png',
+      fit: BoxFit.contain,
+      errorBuilder: (c, e, s) => const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange),
+    );
+  }
+}
+
+// --- NEW CUSTOM CURSOR WIDGET ---
+class CustomCursorWidget extends StatelessWidget {
+  const CustomCursorWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 30, 
+      height: 50,
+      alignment: Alignment.center,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // 1. BOTTOM LAYER: The Black Stroke (Border)
+          Text(
+            'N',
+            style: TextStyle(
+              fontFamily: 'gondens', 
+              fontSize: 30, 
+              foreground: Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 1.0 
+                ..color = Colors.black, 
+            ),
+          ),
+          
+          // 2. TOP LAYER: The Orange Fill
+          const Text(
+            'N',
+            style: TextStyle(
+              fontFamily: 'gondens',
+              fontSize: 30, 
+              color: Color(0xFFF26A1B), 
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
