@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// Make sure this points to your actual LandingPage file
 import 'package:nithesh/screens/home_page.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -8,8 +9,7 @@ class LoadingPage extends StatefulWidget {
   State<LoadingPage> createState() => _LoadingPageState();
 }
 
-class _LoadingPageState extends State<LoadingPage>
-    with TickerProviderStateMixin {
+class _LoadingPageState extends State<LoadingPage> with TickerProviderStateMixin {
   late AnimationController _masterController;
   late AnimationController _pulseController;
 
@@ -31,33 +31,39 @@ class _LoadingPageState extends State<LoadingPage>
 
   static const String _kText = 'NITHESH';
   static const int _kLetterCount = 7;
+  
+  // Refined Color Palette
+  static const Color _kOrange = Color(0xFFFF5E00);
+  static const Color _kDarkFill = Color(0xFF111111); // Deep richer black for the text fill
 
   @override
   void initState() {
     super.initState();
 
-    // ── Master timeline: 3.8 s ──────────────────────────────────────────────
+    // ── Master timeline: 4.2 s (Slightly longer for a more cinematic feel) ──
     _masterController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4200),
     )..forward();
 
     // ── Slow pulse (looping) for a breathing glow ───────────────────────────
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 2500),
     )..repeat(reverse: true);
 
-    _pulseAnim = Tween<double>(begin: 1.0, end: 1.03).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    _pulseAnim = Tween<double>(begin: 1.0, end: 1.04).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutSine),
     );
 
-    // ── Staggered letter reveals (0 – 38 % of timeline) ────────────────────
+    // ── Staggered letter reveals (0 – 30 % of timeline) ────────────────────
     _letterOpacities = [];
     _letterSlides = [];
     for (int i = 0; i < _kLetterCount; i++) {
-      final start = (i / _kLetterCount) * 0.32;
-      final end = start + 0.14;
+      // Tighter stagger interval
+      final start = (i / _kLetterCount) * 0.20; 
+      final end = start + 0.15;
+      
       _letterOpacities.add(
         Tween<double>(begin: 0.0, end: 1.0).animate(
           CurvedAnimation(
@@ -66,29 +72,31 @@ class _LoadingPageState extends State<LoadingPage>
           ),
         ),
       );
+      
       _letterSlides.add(
-        Tween<double>(begin: 40.0, end: 0.0).animate(
+        Tween<double>(begin: 50.0, end: 0.0).animate(
           CurvedAnimation(
             parent: _masterController,
-            curve: Interval(start, end, curve: Curves.easeOut),
+            curve: Interval(start, end, curve: Curves.easeOutExpo), // Snappier drop
           ),
         ),
       );
     }
 
-    // ── Shader sweep (40 – 96 %) ────────────────────────────────────────────
+    // ── Shader sweep (35 – 90 %) ────────────────────────────────────────────
     _sweepAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _masterController,
-        curve: const Interval(0.40, 0.96, curve: Curves.easeInOut),
+        curve: const Interval(0.35, 0.90, curve: Curves.easeInOutCubic),
       ),
     );
 
-    // ── Progress bar / percentage (0 – 95 %) ───────────────────────────────
+    // ── Progress bar / percentage (10 – 95 %) ───────────────────────────────
     _progressAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _masterController,
-        curve: const Interval(0.0, 0.95, curve: Curves.easeInOut),
+        // Easing mimics real-world loading (fast start, slow middle, fast end)
+        curve: const Interval(0.10, 0.95, curve: Curves.easeInOutQuart), 
       ),
     );
 
@@ -96,7 +104,7 @@ class _LoadingPageState extends State<LoadingPage>
     _ringAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _masterController,
-        curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
+        curve: const Interval(0.0, 1.0, curve: Curves.easeOutQuart),
       ),
     );
 
@@ -108,7 +116,7 @@ class _LoadingPageState extends State<LoadingPage>
             pageBuilder: (_, __, ___) => const LandingPage(),
             transitionsBuilder: (_, anim, __, child) =>
                 FadeTransition(opacity: anim, child: child),
-            transitionDuration: const Duration(milliseconds: 900),
+            transitionDuration: const Duration(milliseconds: 1000), // Smoother fade out
           ),
         );
       }
@@ -127,7 +135,7 @@ class _LoadingPageState extends State<LoadingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFF5E00),
+      backgroundColor: _kOrange,
       body: Stack(
         children: [
           // 1. Background geometry
@@ -139,22 +147,22 @@ class _LoadingPageState extends State<LoadingPage>
             ),
           ),
 
-          // 2. Corner brackets
+          // 2. Corner brackets & HUD Elements
           AnimatedBuilder(
             animation: _masterController,
             builder: (_, __) {
-              final t = (_masterController.value * 4.0).clamp(0.0, 1.0);
+              final t = (_masterController.value * 5.0).clamp(0.0, 1.0);
               return Opacity(
                 opacity: t,
                 child: Stack(children: [
-                  Positioned(
-                    top: 44,
-                    left: 44,
+                  const Positioned(
+                    top: 40,
+                    left: 40,
                     child: _CornerBracket(flip: false),
                   ),
-                  Positioned(
-                    bottom: 44,
-                    right: 44,
+                  const Positioned(
+                    bottom: 40,
+                    right: 40,
                     child: _CornerBracket(flip: true),
                   ),
                   Positioned(
@@ -163,23 +171,25 @@ class _LoadingPageState extends State<LoadingPage>
                     child: Text(
                       'v2.0',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.25),
+                        color: Colors.white.withOpacity(0.3),
                         fontSize: 10,
+                        fontFamily: 'Courier',
                         letterSpacing: 2,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                   Positioned(
-                    bottom: 48,
+                    bottom: 44,
                     left: 44,
                     child: Text(
-                      'PORTFOLIO',
+                      'PORTFOLIO INIT',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.25),
+                        color: Colors.white.withOpacity(0.3),
                         fontSize: 9,
+                        fontFamily: 'Courier',
                         letterSpacing: 4,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
@@ -194,7 +204,7 @@ class _LoadingPageState extends State<LoadingPage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildLetterRow(),
-                const SizedBox(height: 52),
+                const SizedBox(height: 60),
                 _buildProgressBar(),
               ],
             ),
@@ -206,60 +216,75 @@ class _LoadingPageState extends State<LoadingPage>
 
   // ── Letter row ──────────────────────────────────────────────────────────────
 
+  // ── Letter row ──────────────────────────────────────────────────────────────
+
   Widget _buildLetterRow() {
     return AnimatedBuilder(
       animation: Listenable.merge([_masterController, _pulseController]),
       builder: (_, __) {
         return Transform.scale(
           scale: _pulseAnim.value,
-          child: ShaderMask(
-            blendMode: BlendMode.srcIn,
-            shaderCallback: (bounds) {
-              final sweep = _sweepAnim.value;
-              if (sweep < 0.001) {
-                return const LinearGradient(
-                  colors: [Colors.white, Colors.white],
-                ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height));
-              }
-              // Tight sweep edge for a crisp paint-fill look
-              final edgeSoft = 0.04;
-              return LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: const [
-                  Colors.white,
-                  Colors.white,
-                  Color(0xFF1C1C1C),
-                  Color(0xFF1C1C1C),
-                ],
-                stops: [
-                  0.0,
-                  (sweep - edgeSoft).clamp(0.0, 1.0),
-                  sweep.clamp(0.0, 1.0),
-                  1.0,
-                ],
-              ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height));
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(_kLetterCount, (i) {
-                return Transform.translate(
-                  offset: Offset(0, _letterSlides[i].value),
-                  child: Opacity(
-                    opacity: _letterOpacities[i].value,
-                    child: Text(
-                      _kText[i],
-                      style: const TextStyle(
-                        fontFamily: 'gondens',
-                        fontSize: 130,
-                        letterSpacing: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0), 
+            child: FittedBox( 
+              fit: BoxFit.scaleDown,
+              child: ShaderMask(
+                blendMode: BlendMode.srcIn,
+                shaderCallback: (bounds) {
+                  final sweep = _sweepAnim.value;
+                  if (sweep < 0.001) {
+                    return const LinearGradient(
+                      colors: [Colors.white, Colors.white],
+                    ).createShader(bounds);
+                  }
+                  
+                  final safeSweep = sweep.clamp(0.0, 1.0);
+                  
+                  return LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: const [
+                      _kDarkFill, 
+                      _kDarkFill,
+                      Colors.white, 
+                      Colors.white,
+                    ],
+                    stops: [
+                      0.0,
+                      safeSweep,
+                      safeSweep, 
+                      1.0,
+                    ],
+                  ).createShader(bounds);
+                },
+                // THE FIX: Massive vertical padding expands the ShaderMask bounds
+                // so the text doesn't escape the gradient when it bounces!
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 60.0), 
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(_kLetterCount, (i) {
+                      return Transform.translate(
+                        offset: Offset(0, _letterSlides[i].value),
+                        child: Opacity(
+                          opacity: _letterOpacities[i].value,
+                          child: Text(
+                            _kText[i],
+                            style: const TextStyle(
+                              fontFamily: 'gondens',
+                              fontSize: 140, 
+                              letterSpacing: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              height: 1.0, // Normalizes custom font heights
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
                   ),
-                );
-              }),
+                ),
+              ),
             ),
           ),
         );
@@ -275,7 +300,7 @@ class _LoadingPageState extends State<LoadingPage>
       builder: (_, __) {
         final pct = _progressAnim.value;
         return SizedBox(
-          width: 220,
+          width: 240, // Slightly wider for elegance
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -284,35 +309,39 @@ class _LoadingPageState extends State<LoadingPage>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'LOADING',
+                    'LOADING ASSETS',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
+                      color: Colors.white.withOpacity(0.5),
+                      fontFamily: 'Courier',
                       fontSize: 9,
                       letterSpacing: 4,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     '${(pct * 100).toInt()}%',
                     style: const TextStyle(
                       color: Colors.white,
+                      fontFamily: 'Courier',
                       fontSize: 10,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               // Track
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: Stack(
                   children: [
+                    // Base empty track
                     Container(
                       height: 2,
                       color: Colors.white.withOpacity(0.15),
                     ),
+                    // Filled track with subtle glow
                     FractionallySizedBox(
                       widthFactor: pct,
                       child: Container(
@@ -321,8 +350,9 @@ class _LoadingPageState extends State<LoadingPage>
                           color: Colors.white,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.white.withOpacity(0.7),
-                              blurRadius: 6,
+                              color: Colors.white.withOpacity(0.8),
+                              blurRadius: 8,
+                              spreadRadius: 1,
                             ),
                           ],
                         ),
@@ -352,7 +382,7 @@ class _CornerBracket extends StatelessWidget {
       scaleY: flip ? -1 : 1,
       child: CustomPaint(
         painter: _BracketPainter(),
-        size: const Size(22, 22),
+        size: const Size(24, 24),
       ),
     );
   }
@@ -362,8 +392,8 @@ class _BracketPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.40)
-      ..strokeWidth = 1.5
+      ..color = Colors.white.withOpacity(0.5)
+      ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.square;
 
@@ -390,13 +420,14 @@ class _BackgroundPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final cx = size.width / 2;
     final cy = size.height / 2;
-    final maxR = size.longestSide * 0.85;
+    final maxR = size.longestSide * 0.9; // Ensures rings span the whole screen
 
-    // Subtle grid
+    // Subtle grid, dynamically spaced based on screen width
     final gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.04)
+      ..color = Colors.white.withOpacity(0.03)
       ..strokeWidth = 0.5;
-    const step = 56.0;
+    final double step = size.width > 600 ? 80.0 : 50.0;
+    
     for (double x = 0; x < size.width; x += step) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
@@ -407,25 +438,26 @@ class _BackgroundPainter extends CustomPainter {
     // Expanding concentric rings
     final ringPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
+      ..strokeWidth = 1.0;
 
-    final radii = [0.12, 0.30, 0.55, 0.80];
+    final radii = [0.15, 0.35, 0.60, 0.85];
     for (int i = 0; i < radii.length; i++) {
-      final delay = (i * 0.18).clamp(0.0, 1.0);
+      final delay = (i * 0.15).clamp(0.0, 1.0);
       final t = ((progress - delay) / (1.0 - delay)).clamp(0.0, 1.0);
       if (t <= 0) continue;
 
       final radius = maxR * radii[i] * t;
-      final opacity = (0.12 * (1.0 - t * 0.5)).clamp(0.0, 1.0);
+      // Fades out as it expands outward
+      final opacity = (0.15 * (1.0 - t * 0.7)).clamp(0.0, 1.0);
       ringPaint.color = Colors.white.withOpacity(opacity);
       canvas.drawCircle(Offset(cx, cy), radius, ringPaint);
     }
 
-    // Small center dot
+    // Small center dot expanding
     canvas.drawCircle(
       Offset(cx, cy),
-      2.5 * progress,
-      Paint()..color = Colors.white.withOpacity(0.20 * progress),
+      3.0 * progress,
+      Paint()..color = Colors.white.withOpacity(0.30 * progress),
     );
   }
 

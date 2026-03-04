@@ -370,13 +370,10 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeOutCubic,
-        width: 280,
-        height: 420,
+        // let the container size itself to the image
+        padding: EdgeInsets.zero,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: _isHovered ? _kOrange : Colors.white24,
-            width: 2,
-          ),
+          // remove border completely
           boxShadow: [
             BoxShadow(
               color: _isHovered ? _kOrange.withOpacity(0.3) : Colors.black45,
@@ -385,7 +382,7 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
             )
           ],
         ),
-        // Clip to ensure the image doesn't overflow the sharp borders
+        // Clip to ensure the image doesn't overflow any transforms
         child: ClipRect(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 400),
@@ -406,7 +403,8 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
                   colorFilter: ColorFilter.matrix(currentMatrix),
                   child: Image.asset(
                     'assets/images/nithesh1.png',
-                    fit: BoxFit.cover,
+                    // allow image to show at natural size
+                    fit: BoxFit.contain,
                   ),
                 );
               },

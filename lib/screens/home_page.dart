@@ -12,6 +12,7 @@ import 'package:nithesh/screens/widget/experience.dart';
 // --- NEW IMPORT HERE ---
 import 'package:nithesh/screens/widget/contact_section.dart';
 import 'package:nithesh/screens/widget/custom_nav_bar.dart';
+import 'package:nithesh/screens/widget/gallery_section.dart';
 
 void main() {
   runApp(
@@ -79,8 +80,10 @@ class _LandingPageState extends State<LandingPage> {
       newIndex = 3; // Skills
     } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
       newIndex = 4; // Experience
+    } else if (offset >= screenHeight * 5.8 && offset < screenHeight * 6.8) {
+      newIndex = 5; // Gallery
     } else {
-      newIndex = 5; // Contact
+      newIndex = 6; // Contact
     }
 
     if (newIndex != _currentNavIndex) {
@@ -149,7 +152,15 @@ class _LandingPageState extends State<LandingPage> {
                 // SECTION 5: Experience
                 SliverToBoxAdapter(child: ExperienceSection(screenWidth: screenWidth)),
 
-                // SECTION 6: Contact & Footer
+                // SECTION 6: Gallery (after Experience)
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: screenHeight,
+                    child: GallerySection(screenHeight: screenHeight),
+                  ),
+                ),
+
+                // SECTION 7: Contact & Footer
                 SliverToBoxAdapter(
                   child: ContactSection(
                     screenWidth: screenWidth,
@@ -214,6 +225,7 @@ class _LandingPageState extends State<LandingPage> {
                     onProjectsTap: () => _scrollTo(screenHeight * 2),
                     onSkillsTap: () => _scrollTo(screenHeight * 4.5),
                     onExperienceTap: () => _scrollTo(screenHeight * 5.5),
+                    onGalleryTap: () => _scrollTo(screenHeight * 6.5),
                     onContactTap: _scrollToEnd,
                   ),
                 ),
@@ -325,6 +337,8 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
               ),
+
+              // (Glow removed)
 
               if (cardOpacity > 0.01)
                 Opacity(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg
 
 class ContactSection extends StatefulWidget {
   final double screenWidth;
@@ -105,7 +107,7 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
                   fontFamily: 'gondens',
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
-                  height: 0.9, // Tighter line height
+                  height: 0.9, 
                   letterSpacing: letterSpace,
                 ),
               ),
@@ -117,7 +119,7 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
                     fontSize: titleSize,
                     fontFamily: 'gondens',
                     fontWeight: FontWeight.bold,
-                    color: Colors.white.withOpacity(0.15), // Ghost text effect
+                    color: Colors.white.withOpacity(0.15), 
                     height: 0.9,
                     letterSpacing: letterSpace,
                   ),
@@ -166,7 +168,7 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
                         letterSpacing: 4,
                         color: isEmailHovered ? Colors.white : Colors.white70,
                       ),
-                      child: const Text("nitheshs829@gmail.com"), // <-- Update Email Here
+                      child: const Text("nitheshs829@gmail.com"), 
                     ),
                     // Growing Underline
                     Positioned(
@@ -176,7 +178,6 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
                         duration: const Duration(milliseconds: 400),
                         curve: Curves.easeOutQuint,
                         height: 4,
-                        // Expands based on text width roughly
                         width: isEmailHovered ? (isMobile ? 250 : 500) : 0, 
                         color: const Color(0xFFF26A1B),
                       ),
@@ -226,14 +227,26 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
     );
   }
 
+  // --- UPDATED SOCIAL LINKS SECTION FOR SVG ---
   Widget _buildSocialLinks() {
     return Wrap(
-      spacing: 30,
+      spacing: 25, // Spacing between icons
       runSpacing: 15,
-      children: [
-        _HoverLink(text: "LINKEDIN", onTap: () {}),
-        _HoverLink(text: "GITHUB", onTap: () {}),
-        _HoverLink(text: "TWITTER", onTap: () {}),
+      children: const [
+         _HoverIconLink(
+          svgPath: 'assets/icons/github.svg', // Make sure this matches your file path
+          url: "https://github.com/YOUR_PROFILE_HERE",
+        ),
+        _HoverIconLink(
+          svgPath: 'assets/icons/linkedin.svg', // Make sure this matches your file path
+          url: "https://www.linkedin.com/in/YOUR_PROFILE_HERE", 
+        ),
+       
+        _HoverIconLink(
+          svgPath: 'assets/icons/instagram.svg', // Make sure this matches your file path
+          url: "https://www.instagram.com/YOUR_PROFILE_HERE",
+        ),
+        // Twitter removed entirely
       ],
     );
   }
@@ -251,19 +264,28 @@ class _ContactSectionState extends State<ContactSection> with SingleTickerProvid
   }
 }
 
-// Custom Hover Widget for Social Links
-class _HoverLink extends StatefulWidget {
-  final String text;
-  final VoidCallback onTap;
+// --- UPDATED WIDGET FOR SVG HOVER & LAUNCHING ---
+class _HoverIconLink extends StatefulWidget {
+  final String svgPath;
+  final String url;
 
-  const _HoverLink({required this.text, required this.onTap});
+  const _HoverIconLink({required this.svgPath, required this.url});
 
   @override
-  State<_HoverLink> createState() => _HoverLinkState();
+  State<_HoverIconLink> createState() => _HoverIconLinkState();
 }
 
-class _HoverLinkState extends State<_HoverLink> {
+class _HoverIconLinkState extends State<_HoverIconLink> {
   bool isHovered = false;
+
+  Future<void> _launchUrl() async {
+    final Uri uri = Uri.parse(widget.url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication); 
+    } else {
+      debugPrint('Could not launch ${widget.url}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -272,17 +294,24 @@ class _HoverLinkState extends State<_HoverLink> {
       onExit: (_) => setState(() => isHovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedDefaultTextStyle(
+        onTap: _launchUrl,
+        child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          style: TextStyle(
-            fontFamily: 'Courier',
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            color: isHovered ? const Color(0xFFF26A1B) : Colors.white,
+          curve: Curves.easeOutCubic,
+          // Slightly scale up the icon when hovered
+          transform: Matrix4.identity()..scale(isHovered ? 1.2 : 1.0),
+          // Ensure scaling happens from the center of the icon
+          alignment: Alignment.center, 
+          child: SvgPicture.asset(
+            widget.svgPath,
+            width: 24,
+            height: 24,
+            // Uses colorFilter to apply the white/orange transition directly to the SVG shapes
+            colorFilter: ColorFilter.mode(
+              isHovered ? const Color(0xFFF26A1B) : Colors.white,
+              BlendMode.srcIn,
+            ),
           ),
-          child: Text(widget.text),
         ),
       ),
     );

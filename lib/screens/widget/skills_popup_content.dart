@@ -53,6 +53,7 @@ class SkillsPopupContent extends StatelessWidget {
                           "TECH STACK",
                           [
                             const _SkillCircle(title: "FLUTTER", icon: Icons.flutter_dash, percentage: 0.9),
+                            const _SkillCircle(title: "DART", icon: Icons.code, percentage: 0.88),
                             const _SkillCircle(title: "PYTHON", icon: Icons.terminal, percentage: 0.8),
                             const _SkillCircle(title: "JS", icon: Icons.javascript, percentage: 0.75),
                             const _SkillCircle(title: "HTML/CSS", icon: Icons.code, percentage: 0.85),

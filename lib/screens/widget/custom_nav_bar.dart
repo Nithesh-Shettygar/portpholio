@@ -21,6 +21,7 @@ class CustomNavBar extends StatefulWidget {
   final VoidCallback onProjectsTap;
   final VoidCallback onSkillsTap;
   final VoidCallback onExperienceTap;
+  final VoidCallback onGalleryTap;
   final VoidCallback onContactTap;
 
   const CustomNavBar({
@@ -31,6 +32,7 @@ class CustomNavBar extends StatefulWidget {
     required this.onProjectsTap,
     required this.onSkillsTap,
     required this.onExperienceTap,
+    required this.onGalleryTap,
     required this.onContactTap,
   });
 
@@ -48,7 +50,7 @@ class _CustomNavBarState extends State<CustomNavBar>
   int _burstIndex = -1;
   int _hoveredIndex = -1;
 
-  static const _total = 6;
+  static const _total = 7;
 
   @override
   void initState() {
@@ -103,6 +105,7 @@ class _CustomNavBarState extends State<CustomNavBar>
         widget.onProjectsTap,
         widget.onSkillsTap,
         widget.onExperienceTap,
+        widget.onGalleryTap,
         widget.onContactTap,
       ];
 
@@ -112,6 +115,7 @@ class _CustomNavBarState extends State<CustomNavBar>
     Icons.grid_view_rounded,
     Icons.bolt_rounded,
     Icons.work_rounded,
+    Icons.photo_library_rounded,
     Icons.mail_rounded,
   ];
 
@@ -146,11 +150,11 @@ class _CustomNavBarState extends State<CustomNavBar>
               child: Container(
                 width: 30,          // ← ultra-thin
                 decoration: BoxDecoration(
-                  color: _kBg.withOpacity(0.97),
+                  color: Colors.black,
                   // borderRadius: BorderRadius.circular(32),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.055),
-                    width: 1,
+                  border: const Border(
+                    left: BorderSide(color: Colors.white, width: 1),
+                    right: BorderSide(color: Colors.white, width: 1),
                   ),
                 ),
                 child: CustomPaint(
@@ -407,11 +411,7 @@ class _SeismicItemState extends State<_SeismicItem>
   @override
   Widget build(BuildContext context) {
     final amp = widget.ampValue;
-    final iconColor = Color.lerp(
-      Colors.white.withOpacity(0.22),
-      _kCyan,
-      amp,
-    )!;
+    final iconColor = widget.isSelected ? _kCyan : Colors.white;
 
     return MouseRegion(
       onEnter: (_) => widget.onHover(true),
@@ -428,7 +428,7 @@ class _SeismicItemState extends State<_SeismicItem>
               scale: _pressAnim.value,
               child: SizedBox(
                 width: 30,
-                height: 100,
+                height: 80,
                 child: Center(
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 380),
@@ -496,7 +496,7 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
               onProjectsTap:     () => setState(() => _index = 2),
               onSkillsTap:       () => setState(() => _index = 3),
               onExperienceTap:   () => setState(() => _index = 4),
-              onContactTap:      () => setState(() => _index = 5),
+              onContactTap:      () => setState(() => _index = 5), onGalleryTap: () {  },
             ),
           ),
 
