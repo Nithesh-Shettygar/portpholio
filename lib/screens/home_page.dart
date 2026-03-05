@@ -226,7 +226,7 @@ class _LandingPageState extends State<LandingPage> {
                     onSkillsTap: () => _scrollTo(screenHeight * 4.5),
                     onExperienceTap: () => _scrollTo(screenHeight * 5.5),
                     onGalleryTap: () => _scrollTo(screenHeight * 6.5),
-                    onContactTap: _scrollToEnd,
+                    onContactTap: _scrollToEnd, onPlayTap: () {  },
                   ),
                 ),
               ),
