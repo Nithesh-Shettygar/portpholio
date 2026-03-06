@@ -61,23 +61,23 @@ class _ExperienceSectionState extends State<ExperienceSection> with TickerProvid
     return Container(
       color: const Color(0xFF111111), // Deep dark background to make the glow pop
       padding: EdgeInsets.symmetric(
-        vertical: 120,
-        horizontal: widget.screenWidth > 900 ? widget.screenWidth * 0.1 : 20,
+        vertical: isMobile ? 60 : 120,
+        horizontal: isMobile ? 15 : (widget.screenWidth > 900 ? widget.screenWidth * 0.1 : 20),
       ),
       child: Column(
         children: [
           // STYLISH TITLE
-          const Text(
+          Text(
             "EXPERIENCE",
             style: TextStyle(
-              fontSize: 50,
+              fontSize: isMobile ? 32 : 50,
               fontFamily: 'gondens',
               fontWeight: FontWeight.bold,
               color: Colors.white,
-              letterSpacing: 20,
+              letterSpacing: isMobile ? 12 : 20,
             ),
           ),
-          const SizedBox(height: 80),
+          const SizedBox(height: 40),
 
           // 3D GLASS CARD CONTAINER
           Center(

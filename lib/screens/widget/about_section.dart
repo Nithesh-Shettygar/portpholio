@@ -11,8 +11,9 @@ const _kBlack = Color(0xFF080808);
 
 class AboutSection extends StatefulWidget {
   final double screenHeight;
+  final double screenWidth;
 
-  const AboutSection({super.key, required this.screenHeight});
+  const AboutSection({super.key, required this.screenHeight, required this.screenWidth});
 
   @override
   State<AboutSection> createState() => _AboutSectionState();
@@ -63,6 +64,33 @@ class _AboutSectionState extends State<AboutSection>
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = widget.screenWidth <= 800;
+    
+    if (isMobile) {
+      // Mobile: Stack vertically
+      return SizedBox(
+        child: Column(
+          children: [
+            // ── TOP: Orange section (60% of visible content) ──
+            SizedBox(
+              height: widget.screenHeight * 0.6,
+              child: _OrangePanel(
+                revealCtrl: _revealCtrl,
+                floatCtrl: _floatCtrl,
+                counterCtrl: _counterCtrl,
+                isMobile: true,
+              ),
+            ),
+            // ── BOTTOM: Black section (40% of visible content) ──
+            SizedBox(
+              height: widget.screenHeight * 0.4,
+              child: _BlackPanel(revealCtrl: _revealCtrl, isMobile: true),
+            ),
+          ],
+        ),
+      );
+    }
+    
     return SizedBox(
       height: widget.screenHeight,
       child: Row(
@@ -74,13 +102,14 @@ class _AboutSectionState extends State<AboutSection>
               revealCtrl: _revealCtrl,
               floatCtrl: _floatCtrl,
               counterCtrl: _counterCtrl,
+              isMobile: false,
             ),
           ),
 
           // ── RIGHT  25%  black ──────────────────────────────────────────
           Expanded(
             flex: 25,
-            child: _BlackPanel(revealCtrl: _revealCtrl),
+            child: _BlackPanel(revealCtrl: _revealCtrl, isMobile: false),
           ),
         ],
       ),
@@ -95,11 +124,13 @@ class _OrangePanel extends StatelessWidget {
   final AnimationController revealCtrl;
   final AnimationController floatCtrl;
   final AnimationController counterCtrl;
+  final bool isMobile;
 
   const _OrangePanel({
     required this.revealCtrl,
     required this.floatCtrl,
     required this.counterCtrl,
+    required this.isMobile,
   });
 
   @override
@@ -284,8 +315,9 @@ class _OrangePanel extends StatelessWidget {
 // ══════════════════════════════════════════════════════════════════════════════
 class _BlackPanel extends StatelessWidget {
   final AnimationController revealCtrl;
+  final bool isMobile;
 
-  const _BlackPanel({required this.revealCtrl});
+  const _BlackPanel({required this.revealCtrl, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {

@@ -17,6 +17,7 @@ import 'package:nithesh/screens/widget/gallery_section.dart';
 void main() {
   runApp(
     MaterialApp(
+      title: 'nithesh',
       home: const LandingPage(),
       debugShowCheckedModeBanner: false,
       scrollBehavior: const MaterialScrollBehavior().copyWith(
@@ -67,23 +68,45 @@ class _LandingPageState extends State<LandingPage> {
 
     double offset = _scrollController.offset;
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isMobile = screenWidth <= 800;
 
     int newIndex = 0;
 
-    if (offset < screenHeight * 0.5) {
-      newIndex = 0; // Home
-    } else if (offset >= screenHeight * 0.5 && offset < screenHeight * 1.8) {
-      newIndex = 1; // About
-    } else if (offset >= screenHeight * 1.8 && offset < screenHeight * 3.5) {
-      newIndex = 2; // Projects
-    } else if (offset >= screenHeight * 3.5 && offset < screenHeight * 4.8) {
-      newIndex = 3; // Skills
-    } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
-      newIndex = 4; // Experience
-    } else if (offset >= screenHeight * 5.8 && offset < screenHeight * 6.8) {
-      newIndex = 5; // Gallery
+    if (isMobile) {
+      // Mobile breakpoints - adjusted for smaller screens
+      if (offset < screenHeight * 0.4) {
+        newIndex = 0; // Home
+      } else if (offset >= screenHeight * 0.4 && offset < screenHeight * 1.5) {
+        newIndex = 1; // About
+      } else if (offset >= screenHeight * 1.5 && offset < screenHeight * 2.8) {
+        newIndex = 2; // Projects
+      } else if (offset >= screenHeight * 2.8 && offset < screenHeight * 3.8) {
+        newIndex = 3; // Skills
+      } else if (offset >= screenHeight * 3.8 && offset < screenHeight * 4.6) {
+        newIndex = 4; // Experience
+      } else if (offset >= screenHeight * 4.6 && offset < screenHeight * 5.4) {
+        newIndex = 5; // Gallery
+      } else {
+        newIndex = 6; // Contact
+      }
     } else {
-      newIndex = 6; // Contact
+      // Desktop breakpoints
+      if (offset < screenHeight * 0.5) {
+        newIndex = 0; // Home
+      } else if (offset >= screenHeight * 0.5 && offset < screenHeight * 1.8) {
+        newIndex = 1; // About
+      } else if (offset >= screenHeight * 1.8 && offset < screenHeight * 3.5) {
+        newIndex = 2; // Projects
+      } else if (offset >= screenHeight * 3.5 && offset < screenHeight * 4.8) {
+        newIndex = 3; // Skills
+      } else if (offset >= screenHeight * 4.8 && offset < screenHeight * 5.8) {
+        newIndex = 4; // Experience
+      } else if (offset >= screenHeight * 5.8 && offset < screenHeight * 6.8) {
+        newIndex = 5; // Gallery
+      } else {
+        newIndex = 6; // Contact
+      }
     }
 
     if (newIndex != _currentNavIndex) {
@@ -131,10 +154,10 @@ class _LandingPageState extends State<LandingPage> {
               ),
               slivers: [
                 // SECTION 1: Intro
-                SliverToBoxAdapter(child: HeroSection(screenHeight: screenHeight)),
+                SliverToBoxAdapter(child: HeroSection(screenHeight: screenHeight, screenWidth: screenWidth)),
 
                 // SECTION 2: About
-                SliverToBoxAdapter(child: AboutSection(screenHeight: screenHeight)),
+                SliverToBoxAdapter(child: AboutSection(screenHeight: screenHeight, screenWidth: screenWidth)),
 
                 // SECTION 3 & 4: Projects & Skills
                 SliverPersistentHeader(
@@ -156,7 +179,7 @@ class _LandingPageState extends State<LandingPage> {
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: screenHeight,
-                    child: GallerySection(screenHeight: screenHeight),
+                    child: GallerySection(screenHeight: screenHeight, screenWidth: screenWidth),
                   ),
                 ),
 
@@ -226,7 +249,7 @@ class _LandingPageState extends State<LandingPage> {
                     onSkillsTap: () => _scrollTo(screenHeight * 4.5),
                     onExperienceTap: () => _scrollTo(screenHeight * 5.5),
                     onGalleryTap: () => _scrollTo(screenHeight * 6.5),
-                    onContactTap: _scrollToEnd, onPlayTap: () {  },
+                    onContactTap: () => _scrollTo(screenHeight * 7.5),
                   ),
                 ),
               ),

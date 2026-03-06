@@ -20,8 +20,9 @@ List<Map<String, String>> get kImages => List.generate(10, (i) => {
 
 class GallerySection extends StatelessWidget {
   final double screenHeight;
+  final double screenWidth;
 
-  const GallerySection({super.key, required this.screenHeight});
+  const GallerySection({super.key, required this.screenHeight, required this.screenWidth});
 
   void _openLightbox(BuildContext context, int index) {
     Navigator.of(context).push(
@@ -40,9 +41,79 @@ class GallerySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = screenWidth <= 800;
+    
+    if (isMobile) {
+      // Mobile view: Stack vertically
+      return Container(
+        color: const Color(0xFF0A0A0A),
+        child: Column(
+          children: [
+            // Static content at top
+            SizedBox(
+              height: screenHeight * 0.35,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 30, height: 2, color: const Color(0xFFF26A1B)),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'GALLERY',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      'Visual storytelling through photography and design',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.7),
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Gallery grid at bottom
+            Expanded(
+              child: Row(
+                children: [
+                  // Column 1 (Scrolls Down)
+                  Expanded(
+                    child: AutoScrollingGalleryColumn(
+                      images: kImages,
+                      reverse: false,
+                      initialOffset: 50000.0,
+                      onTap: (idx) => _openLightbox(context, idx),
+                    ),
+                  ),
+                  // Column 2 (Scrolls Up)
+                  Expanded(
+                    child: AutoScrollingGalleryColumn(
+                      images: kImages,
+                      reverse: true,
+                      initialOffset: 50400.0,
+                      onTap: (idx) => _openLightbox(context, idx),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
     return Container(
       height: screenHeight,
-      color: const Color(0xFF0A0A0A), // Deep premium black
+      color: const Color(0xFF0A0A0A),
       child: Row(
         children: [
           // ── LEFT SIDE: Static Content ──

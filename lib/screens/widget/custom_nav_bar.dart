@@ -22,7 +22,6 @@ class CustomNavBar extends StatefulWidget {
   final VoidCallback onSkillsTap;
   final VoidCallback onExperienceTap;
   final VoidCallback onGalleryTap;
-  final VoidCallback onPlayTap;
   final VoidCallback onContactTap;
 
   const CustomNavBar({
@@ -34,7 +33,6 @@ class CustomNavBar extends StatefulWidget {
     required this.onSkillsTap,
     required this.onExperienceTap,
     required this.onGalleryTap,
-    required this.onPlayTap,
     required this.onContactTap,
   });
 
@@ -52,7 +50,7 @@ class _CustomNavBarState extends State<CustomNavBar>
   int _burstIndex = -1;
   int _hoveredIndex = -1;
 
-  static const _total = 8;
+  static const _total = 7;
 
   @override
   void initState() {
@@ -108,7 +106,6 @@ class _CustomNavBarState extends State<CustomNavBar>
         widget.onSkillsTap,
         widget.onExperienceTap,
         widget.onGalleryTap,
-        widget.onPlayTap,
         widget.onContactTap,
       ];
 
@@ -119,7 +116,6 @@ class _CustomNavBarState extends State<CustomNavBar>
     Icons.bolt_rounded,
     Icons.work_rounded,
     Icons.photo_library_rounded,
-    Icons.videogame_asset_rounded,
     Icons.mail_rounded,
   ];
 
@@ -500,7 +496,8 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
               onProjectsTap:     () => setState(() => _index = 2),
               onSkillsTap:       () => setState(() => _index = 3),
               onExperienceTap:   () => setState(() => _index = 4),
-              onContactTap:      () => setState(() => _index = 5), onGalleryTap: () {  }, onPlayTap: () {  },
+              onGalleryTap:      () => setState(() => _index = 5),
+              onContactTap:      () => setState(() => _index = 6),
             ),
           ),
 
@@ -508,7 +505,7 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
           Expanded(
             child: Center(
               child: Text(
-                ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Contact'][_index],
+                ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Gallery', 'Contact'][_index],
                 style: const TextStyle(
                   fontFamily: 'Courier',
                   color: Color(0xFFF26A1B),

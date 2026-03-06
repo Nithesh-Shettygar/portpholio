@@ -6,10 +6,12 @@ import 'dart:math';
 
 class HeroSection extends StatefulWidget {
   final double screenHeight;
+  final double screenWidth;
 
   const HeroSection({
     super.key,
     required this.screenHeight,
+    required this.screenWidth,
   });
 
   @override
@@ -46,6 +48,10 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = widget.screenWidth <= 800;
+    double circle1Size = isMobile ? 120 : 200;
+    double circle2Size = isMobile ? 160 : 280;
+    
     return Container(
       height: widget.screenHeight,
       width: double.infinity,
@@ -60,12 +66,12 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
               // --- ORANGE CIRCLE 1 ---
               Positioned(
                 top: widget.screenHeight * 0.15, 
-                left: -30,                       
+                left: isMobile ? -60 : -30,                       
                 child: ImageFiltered(
                   imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), 
                   child: Container(
-                    width: 200,
-                    height: 200,
+                    width: circle1Size,
+                    height: circle1Size,
                     decoration: const BoxDecoration(
                       color: Colors.orange,
                       shape: BoxShape.circle,
@@ -80,12 +86,12 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
               // --- ORANGE CIRCLE 2 ---
               Positioned(
                 bottom: widget.screenHeight * 0.1, 
-                right: -50,                        
+                right: isMobile ? -80 : -50,                        
                 child: ImageFiltered(
                   imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20), 
                   child: Container(
-                    width: 280,
-                    height: 280,
+                    width: circle2Size,
+                    height: circle2Size,
                     decoration: const BoxDecoration(
                       color: Colors.orange,
                       shape: BoxShape.circle,
@@ -101,40 +107,43 @@ class _HeroSectionState extends State<HeroSection> with SingleTickerProviderStat
               Transform.translate(
                 offset: Offset(0, _floatAnimation.value),
                 child: Center(
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Stack(
-                      alignment: Alignment.centerLeft, 
-                      children: [
-                        const Text(
-                          'NITHESH',
-                          style: TextStyle(
-                            fontFamily: 'gondens',
-                            fontSize: 350,
-                            letterSpacing: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        // --- UPDATED: VERTICAL UI/UX DESIGNER TEXT ---
-                        Padding(
-                          padding: const EdgeInsets.only(left: 45), 
-                          child: RotatedBox(
-                            quarterTurns: 3, 
-                            child: const Text(
-                              'UI/UX DESIGNER',
-                              style: TextStyle(
-                                fontFamily: 'gondens',
-                                fontSize: 22, 
-                                // INCREASED LETTER SPACING HERE
-                                letterSpacing: 16, 
-                                color: Colors.orange, 
-                                fontWeight: FontWeight.bold,
-                              ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 0),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Stack(
+                        alignment: Alignment.centerLeft, 
+                        children: [
+                          Text(
+                            'NITHESH',
+                            style: TextStyle(
+                              fontFamily: 'gondens',
+                              fontSize: isMobile ? 140 : 350,
+                              letterSpacing: isMobile ? 10 : 30,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
-                        ),
-                      ],
+                          // --- UPDATED: VERTICAL UI/UX DESIGNER TEXT ---
+                          if (!isMobile)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 45), 
+                              child: RotatedBox(
+                                quarterTurns: 3, 
+                                child: const Text(
+                                  'UI/UX DESIGNER',
+                                  style: TextStyle(
+                                    fontFamily: 'gondens',
+                                    fontSize: 22, 
+                                    letterSpacing: 16, 
+                                    color: Colors.orange, 
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
