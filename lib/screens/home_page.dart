@@ -154,6 +154,11 @@ class _LandingPageState extends State<LandingPage> {
                 double totalProgress = (offset / (screenHeight * 4)).clamp(0.0, 1.0);
                 if (offset < 0) return const SizedBox.shrink();
                 
+                // Calculate growProgress (skill section progress)
+                double startAt = screenHeight * 2;
+                double projectProgress = ((offset - startAt) / screenHeight).clamp(0.0, 4.5);
+                double growProgress = ((projectProgress - 2.5) / 1.0).clamp(0.0, 1.0);
+                
                 double phaseAbout = 1.0 / 4.0; 
                 double phaseProjectsStart = 2.0 / 4.0; 
                 double phaseGlassMovesLeft = 2.5 / 4.0; 
@@ -181,11 +186,24 @@ class _LandingPageState extends State<LandingPage> {
                   horizontalAlign = lerpDouble(0.0, -1.3, ease)!;
                   verticalAlign = lerpDouble(-0.08, 0.0, ease)!;
                   glassWidth = lerpDouble(600, 500, ease)!;
-                } else {
+                } else if (growProgress < 0.5) {
+                  // Glass moves out to the left as skill section appears (first 50% of growProgress)
+                  double exitProgress = (growProgress / 0.5); // Normalized to [0, 1]
+                  double ease = Curves.easeInOutCubic.transform(exitProgress);
+                  
                   rotation = -math.pi / 2;
-                  horizontalAlign = -1.3;
+                  horizontalAlign = lerpDouble(-1.3, -3.0, ease)!; // Moves far left, off-screen
                   verticalAlign = 0.0;
                   glassWidth = 500;
+                } else {
+                  // Glass comes from right side (second 50% of growProgress)
+                  double enterProgress = ((growProgress - 0.5) / 0.5); // Normalized to [0, 1]
+                  double ease = Curves.easeInOutCubic.transform(enterProgress);
+                  
+                  rotation = lerpDouble(-math.pi / 2, -20 * (math.pi / 180), ease)!; // Rotates from -90° to -20°
+                  horizontalAlign = lerpDouble(3.0, -0.2, ease)!; // Comes from far right outside screen to center
+                  verticalAlign = lerpDouble(0.0, -0.5, ease)!; // move a bit upwards as it settles
+                  glassWidth = lerpDouble(300, 200, ease)!; // shrink size once centered
                 }
 
                 return IgnorePointer(

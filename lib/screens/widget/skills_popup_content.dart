@@ -9,10 +9,8 @@ class SkillsPopupContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double contentOpacity = math
-        .max(0, (progress - 0.4) / 0.6)
-        .toDouble()
-        .clamp(0.0, 1.0);
+    // Global opacity for the header and background dots
+    double contentOpacity = math.max(0, (progress - 0.3) / 0.7).toDouble().clamp(0.0, 1.0);
 
     return Stack(
       children: [
@@ -23,65 +21,82 @@ class SkillsPopupContent extends StatelessWidget {
         ),
         Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // --- Updated Title ---
                 Opacity(
                   opacity: contentOpacity,
-                  child: const Text(
-                    "SKILLS",
-                    style: TextStyle(
-                      fontSize: 52, // Slightly smaller for horizontal balance
-                      fontFamily: 'gondens',
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: 6,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 50),
-                // Horizontal Layout Sections
-                Opacity(
-                  opacity: contentOpacity,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
                     children: [
-                      // --- TECH SECTION ---
-                      Expanded(
-                        child: _buildSection(
-                          "TECH STACK",
-                          [
-                            const _SkillCircle(title: "FLUTTER", icon: Icons.flutter_dash, percentage: 0.9),
-                            const _SkillCircle(title: "DART", icon: Icons.code, percentage: 0.88),
-                            const _SkillCircle(title: "PYTHON", icon: Icons.terminal, percentage: 0.8),
-                            const _SkillCircle(title: "JS", icon: Icons.javascript, percentage: 0.75),
-                            const _SkillCircle(title: "HTML/CSS", icon: Icons.code, percentage: 0.85),
-                          ],
+                      const Text(
+                        "SKILLS",
+                        style: TextStyle(
+                          fontSize: 52,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 12,
+                          fontFamily: 'gondens',
                         ),
                       ),
-                      
-                      // --- DESIGN SECTION ---
-                      Expanded(
-                        child: _buildSection(
-                          "DESIGN",
-                          [
-                            const _SkillCircle(title: "FIGMA", icon: Icons.design_services, percentage: 0.7),
-                          ],
-                        ),
-                      ),
-                      
-                      // --- TOOLS SECTION ---
-                      Expanded(
-                        child: _buildSection(
-                          "TOOLS",
-                          [
-                            const _SkillCircle(title: "GITHUB", icon: Icons.hub, percentage: 0.85),
-                          ],
-                        ),
-                      ),
+                      const SizedBox(height: 10),
+                      Container(height: 2, width: 60, color: Colors.white24),
                     ],
                   ),
+                ),
+                const SizedBox(height: 60),
+
+                // --- Animated Cards Grid ---
+                Wrap(
+                  spacing: 40,
+                  runSpacing: 40,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    _EntranceAnimation(
+                      delay: 0.4,
+                      progress: progress,
+                      child: _HoverAnimatedCard(
+                        title: "DEVELOPMENT",
+                        baseAngle: -8 * (math.pi / 180),
+                        accentColor: Colors.blueAccent,
+                        skills: const [
+                          _SkillCircle(title: "FLUTTER", icon: Icons.flutter_dash, percentage: 0.9),
+                          _SkillCircle(title: "DART", icon: Icons.code, percentage: 0.88),
+                          _SkillCircle(title: "PYTHON", icon: Icons.terminal, percentage: 0.8),
+                          _SkillCircle(title: "JS", icon: Icons.javascript, percentage: 0.75),
+                        ],
+                      ),
+                    ),
+                    _EntranceAnimation(
+                      delay: 0.55,
+                      progress: progress,
+                      child: _HoverAnimatedCard(
+                        title: "DESIGN",
+                        baseAngle: 4 * (math.pi / 180),
+                        accentColor: Colors.purpleAccent,
+                        skills: const [
+                          _SkillCircle(title: "FIGMA", icon: Icons.design_services, percentage: 0.75),
+                          _SkillCircle(title: "ADOBE PS", icon: Icons.brush, percentage: 0.65),
+                          _SkillCircle(title: "UI/UX", icon: Icons.auto_awesome, percentage: 0.8),
+                        ],
+                      ),
+                    ),
+                    _EntranceAnimation(
+                      delay: 0.7,
+                      progress: progress,
+                      child: _HoverAnimatedCard(
+                        title: "INFRA",
+                        baseAngle: -12 * (math.pi / 180),
+                        accentColor: Colors.orangeAccent,
+                        skills: const [
+                          _SkillCircle(title: "GITHUB", icon: Icons.hub, percentage: 0.85),
+                          _SkillCircle(title: "FIREBASE", icon: Icons.cloud, percentage: 0.8),
+                          _SkillCircle(title: "AWS", icon: Icons.storage, percentage: 0.5),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -90,28 +105,126 @@ class SkillsPopupContent extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildSection(String title, List<Widget> skills) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
+// --- Entrance Animation Wrapper ---
+class _EntranceAnimation extends StatelessWidget {
+  final Widget child;
+  final double delay;
+  final double progress;
+
+  const _EntranceAnimation({
+    required this.child,
+    required this.delay,
+    required this.progress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Calculate local animation progress based on the global progress scroll
+    double localProgress = math.max(0, (progress - delay) / 0.3).toDouble().clamp(0.0, 1.0);
+    
+    // Curving the animation for a "pop in" feel
+    double curve = Curves.easeOutBack.transform(localProgress);
+
+    return Opacity(
+      opacity: localProgress,
+      child: Transform.translate(
+        offset: Offset(0, 100 * (1 - curve)), // Slides from 100px down to 0
+        child: child,
+      ),
+    );
+  }
+}
+
+class _HoverAnimatedCard extends StatefulWidget {
+  final String title;
+  final List<Widget> skills;
+  final double baseAngle;
+  final Color accentColor;
+
+  const _HoverAnimatedCard({
+    required this.title,
+    required this.skills,
+    required this.baseAngle,
+    required this.accentColor,
+  });
+
+  @override
+  State<_HoverAnimatedCard> createState() => _HoverAnimatedCardState();
+}
+
+class _HoverAnimatedCardState extends State<_HoverAnimatedCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+        transformAlignment: Alignment.center,
+        transform: Matrix4.identity()
+          ..rotateZ(_isHovered ? 0.0 : widget.baseAngle)
+          ..scale(_isHovered ? 1.05 : 1.0),
+        child: Container(
+          width: 320,
+          height: 420,
+          decoration: BoxDecoration(
             color: Colors.black,
-            fontSize: 10,
-            letterSpacing: 4,
-            fontFamily: 'Courier',
-            fontWeight: FontWeight.bold,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: _isHovered ? widget.accentColor.withOpacity(0.8) : Colors.white.withOpacity(0.1),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered ? widget.accentColor.withOpacity(0.2) : Colors.black54,
+                blurRadius: _isHovered ? 40 : 20,
+                offset: const Offset(0, 10),
+              )
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.5,
+                    fontFamily: 'gondens',
+                  ),
+                ),
+                const SizedBox(height: 8),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: 2,
+                  width: _isHovered ? 60 : 30,
+                  color: widget.accentColor,
+                ),
+                const SizedBox(height: 30),
+                Expanded(
+                  child: Center(
+                    child: Wrap(
+                      spacing: 20,
+                      runSpacing: 25,
+                      alignment: WrapAlignment.center,
+                      children: widget.skills,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 30),
-        Wrap(
-          spacing: 20,
-          runSpacing: 20,
-          alignment: WrapAlignment.center,
-          children: skills,
-        ),
-      ],
+      ),
     );
   }
 }
@@ -121,11 +234,7 @@ class _SkillCircle extends StatefulWidget {
   final IconData icon;
   final double percentage;
 
-  const _SkillCircle({
-    required this.title, 
-    required this.icon, 
-    required this.percentage
-  });
+  const _SkillCircle({required this.title, required this.icon, required this.percentage});
 
   @override
   State<_SkillCircle> createState() => _SkillCircleState();
@@ -136,13 +245,9 @@ class _SkillCircleState extends State<_SkillCircle> {
 
   @override
   Widget build(BuildContext context) {
-    double baseSize = 90; // Reduced for horizontal fit
-    double hoverSize = 100;
-
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -150,46 +255,26 @@ class _SkillCircleState extends State<_SkillCircle> {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: _isHovered ? hoverSize : baseSize,
-                height: _isHovered ? hoverSize : baseSize,
+                width: 60,
+                height: 60,
                 child: CustomPaint(
                   painter: _PercentagePainter(
                     percentage: widget.percentage,
-                    color: _isHovered ? Colors.white : Colors.white.withOpacity(0.4),
-                    thickness: _isHovered ? 4 : 2,
+                    color: _isHovered ? Colors.white : Colors.white.withOpacity(0.3),
+                    thickness: 3,
                   ),
                 ),
               ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: _isHovered ? (hoverSize - 12) : (baseSize - 12),
-                height: _isHovered ? (hoverSize - 12) : (baseSize - 12),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _isHovered
-                      ? Colors.white.withOpacity(0.2)
-                      : Colors.white.withOpacity(0.08),
-                ),
-                child: Center(
-                  child: Icon(
-                    widget.icon, 
-                    size: _isHovered ? 28 : 24, 
-                    color: Colors.black
-                  ),
-                ),
-              ),
+              Icon(widget.icon, size: 20, color: _isHovered ? Colors.white : Colors.white60),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             widget.title,
-            textAlign: TextAlign.center,
             style: TextStyle(
-              color: _isHovered ? Colors.black : Colors.white70,
-              fontFamily: 'Courier',
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+              color: _isHovered ? Colors.white : Colors.white38,
               fontSize: 9,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -208,20 +293,19 @@ class _PercentagePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = (size.width / 2);
-    final rect = Rect.fromCircle(center: center, radius: radius);
-    
+    final radius = size.width / 2;
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = thickness;
 
-    canvas.drawArc(rect, -math.pi / 2, 2 * math.pi * percentage, false, paint);
+    canvas.drawCircle(center, radius, Paint()..color = Colors.white.withOpacity(0.05)..style = PaintingStyle.stroke..strokeWidth = thickness);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -math.pi / 2, 2 * math.pi * percentage, false, paint);
   }
 
   @override
-  bool shouldRepaint(covariant _PercentagePainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
 class _StaticDotPainter extends CustomPainter {
@@ -232,10 +316,8 @@ class _StaticDotPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..color = Colors.white.withOpacity(0.05 * globalOpacity);
     final rng = math.Random(42);
-    for (int i = 0; i < 30; i++) {
-      double x = rng.nextDouble() * size.width;
-      double y = rng.nextDouble() * size.height;
-      canvas.drawCircle(Offset(x, y), 1.0, paint);
+    for (int i = 0; i < 40; i++) {
+      canvas.drawCircle(Offset(rng.nextDouble() * size.width, rng.nextDouble() * size.height), 0.8, paint);
     }
   }
 
