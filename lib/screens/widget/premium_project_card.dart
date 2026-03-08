@@ -223,26 +223,46 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
-          width: 170,
+          width: 200,
           height: 260,
           transform: Matrix4.identity()..scale(isHovered ? 1.05 : 1.0),
           transformAlignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.black,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: widget.index % 2 == 0
+                  ? [
+                      const Color(0xFFFFFFFF), // Light white
+                      const Color(0xFFF0F0F0), // Medium white
+                      const Color(0xFFE0E0E0), // Dark white
+                      const Color(0xFFCCCCCC), // Darker white
+                    ]
+                  : [
+                      const Color(0xFF333333), // Light black
+                      const Color(0xFF1a1a1a), // Medium black
+                      const Color(0xFF0a0a0a), // Dark black
+                      const Color(0xFF000000), // Darker black
+                    ],
+            ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isHovered ? const Color(0xFFF26A1B) : Colors.white,
-              width: 3.0,
+              color: isHovered ? const Color(0xFFF26A1B) : (widget.index % 2 == 0 ? const Color(0xFF333333) : const Color(0xFFCCCCCC)),
+              width: 10,
             ),
             boxShadow: [
               BoxShadow(
-                color: isHovered
-                    ? const Color(0xFFF26A1B).withOpacity(0.4)
-                    : Colors.black.withOpacity(0.8),
-                blurRadius: isHovered ? 40 : 30,
-                offset: isHovered ? const Offset(0, 0) : const Offset(0, 15),
-                spreadRadius: isHovered ? 5 : -5,
-              )
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: isHovered ? 25 : 20,
+                offset: isHovered ? const Offset(0, 6) : const Offset(0, 10),
+                spreadRadius: 1,
+              ),
+              BoxShadow(
+                color: Colors.white.withOpacity(0.15),
+                blurRadius: 12,
+                offset: const Offset(0, -2),
+                spreadRadius: 0,
+              ),
             ],
           ),
           child: ClipRRect(
@@ -256,80 +276,14 @@ class _PremiumProjectCardState extends State<PremiumProjectCard> {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        stops: const [0.0, 0.3, 0.3, 1.0],
+                        stops: const [0.0, 0.35, 0.7, 1.0],
                         colors: [
-                          Colors.white.withOpacity(isHovered ? 0.20 : 0.10),
-                          Colors.white.withOpacity(isHovered ? 0.05 : 0.02),
+                          Colors.white.withOpacity(isHovered ? 0.30 : 0.20),
+                          Colors.white.withOpacity(isHovered ? 0.12 : 0.06),
                           Colors.transparent,
-                          Colors.transparent,
+                          Colors.black.withOpacity(isHovered ? 0.12 : 0.08),
                         ],
                       ),
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 250),
-                              style: TextStyle(
-                                color: isHovered
-                                    ? const Color(0xFFF26A1B)
-                                    : Colors.white70,
-                                fontSize: 10,
-                                letterSpacing: 1.5,
-                                fontWeight: FontWeight.w700,
-                                height: 1.4,
-                              ),
-                              child: const Text("VIEW\nDETAILS ↗"),
-                            ),
-                            Text(
-                              "0${widget.index + 1}",
-                              style: TextStyle(
-                                color: isHovered
-                                    ? const Color(0xFFF26A1B)
-                                    : Colors.white,
-                                fontFamily: 'gondens',
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              width: isHovered ? 40 : 20,
-                              height: 3,
-                              color: isHovered
-                                  ? const Color(0xFFF26A1B)
-                                  : Colors.white,
-                              margin: const EdgeInsets.only(bottom: 12),
-                            ),
-                            Text(
-                              projectNames[widget.index % projectNames.length],
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 1.2,
-                                height: 1.1,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                      ],
                     ),
                   ),
                 ),
