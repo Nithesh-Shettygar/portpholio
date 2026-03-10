@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'dart:math' as math;
 import 'dart:ui';
 
-// Custom Widget Imports
+// Custom Widget Imports (Ensure these files exist in your project)
 import 'package:nithesh/screens/widget/hero_section.dart';
 import 'package:nithesh/screens/widget/about_section.dart';
 import 'package:nithesh/screens/widget/premium_project_card.dart';
@@ -65,28 +65,15 @@ class _LandingPageState extends State<LandingPage> {
 
     double offset = _scrollController.offset;
     double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-    bool isMobile = screenWidth <= 800;
 
     int newIndex = 0;
-    // Updated breakpoints to account for the extended 4.5x animation spacer
-    if (isMobile) {
-      if (offset < screenHeight * 0.4) newIndex = 0;
-      else if (offset < screenHeight * 1.5) newIndex = 1;
-      else if (offset < screenHeight * 3.8) newIndex = 2;
-      else if (offset < screenHeight * 5.8) newIndex = 3;
-      else if (offset < screenHeight * 6.8) newIndex = 4;
-      else if (offset < screenHeight * 7.8) newIndex = 5;
-      else newIndex = 6;
-    } else {
-      if (offset < screenHeight * 0.5) newIndex = 0;
-      else if (offset < screenHeight * 1.8) newIndex = 1;
-      else if (offset < screenHeight * 4.0) newIndex = 2;
-      else if (offset < screenHeight * 6.0) newIndex = 3;
-      else if (offset < screenHeight * 7.0) newIndex = 4;
-      else if (offset < screenHeight * 8.0) newIndex = 5;
-      else newIndex = 6;
-    }
+    if (offset < screenHeight * 0.5) newIndex = 0;
+    else if (offset < screenHeight * 1.8) newIndex = 1;
+    else if (offset < screenHeight * 4.0) newIndex = 2;
+    else if (offset < screenHeight * 6.0) newIndex = 3;
+    else if (offset < screenHeight * 7.0) newIndex = 4;
+    else if (offset < screenHeight * 8.0) newIndex = 5;
+    else newIndex = 6;
 
     if (newIndex != _currentNavIndex) {
       setState(() => _currentNavIndex = newIndex);
@@ -108,157 +95,186 @@ class _LandingPageState extends State<LandingPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-      body: MouseRegion(
-        cursor: SystemMouseCursors.none,
-        onEnter: (_) => _isHovering.value = true,
-        onExit: (_) => _isHovering.value = false,
-        onHover: (event) => _mousePos.value = event.position,
-        child: Stack(
-          children: [
-            CustomScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-              slivers: [
-                SliverToBoxAdapter(child: HeroSection(screenHeight: screenHeight, screenWidth: screenWidth)),
-                SliverToBoxAdapter(child: AboutSection(screenHeight: screenHeight, screenWidth: screenWidth)),
-                
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: ProjectSectionDelegate(
-                    screenHeight: screenHeight,
-                    screenWidth: screenWidth,
-                    scrollController: _scrollController,
-                  ),
-                ),
-
-                SliverToBoxAdapter(child: SizedBox(height: screenHeight * 4.5)),
-                SliverToBoxAdapter(child: ExperienceSection(screenWidth: screenWidth)),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: screenHeight,
-                    child: GallerySection(screenHeight: screenHeight, screenWidth: screenWidth),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: ContactSection(screenWidth: screenWidth, screenHeight: screenHeight),
-                ),
-              ],
+      body: Stack(
+        children: [
+          // 1. GLOBAL MOUSE TRACKER
+          Positioned.fill(
+            child: MouseRegion(
+              cursor: SystemMouseCursors.none,
+              onEnter: (_) => _isHovering.value = true,
+              onExit: (_) => _isHovering.value = false,
+              onHover: (event) => _mousePos.value = event.position,
+              child: const SizedBox.expand(),
             ),
+          ),
 
-            // --- FLOATING GLASSES ---
-            AnimatedBuilder(
-              animation: _scrollController,
-              child: const RepaintBoundary(child: HeroSpecsImage()),
-              builder: (context, child) {
-                double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
-                double totalProgress = (offset / (screenHeight * 4)).clamp(0.0, 1.0);
-                if (offset < 0) return const SizedBox.shrink();
-                
-                // Calculate growProgress (skill section progress)
-                double startAt = screenHeight * 2;
-                double projectProgress = ((offset - startAt) / screenHeight).clamp(0.0, 4.5);
-                double growProgress = ((projectProgress - 2.5) / 1.0).clamp(0.0, 1.0);
-                
-                double phaseAbout = 1.0 / 4.0; 
-                double phaseProjectsStart = 2.0 / 4.0; 
-                double phaseGlassMovesLeft = 2.5 / 4.0; 
-                
-                double rotation, horizontalAlign, verticalAlign, glassWidth;
-
-                if (totalProgress < phaseAbout) {
-                  double p = totalProgress / phaseAbout;
-                  double ease = Curves.easeInOutCubic.transform(p);
-                  rotation = lerpDouble(-7 * (math.pi / 180), math.pi / 2, ease)!;
-                  horizontalAlign = lerpDouble(0.0, 1.0, ease)!;
-                  verticalAlign = lerpDouble(-0.22, 0.0, ease)!;
-                  glassWidth = lerpDouble(180, 500, ease)!;
-                } else if (totalProgress < phaseProjectsStart) {
-                  double p = (totalProgress - phaseAbout) / (phaseProjectsStart - phaseAbout);
-                  double ease = Curves.easeInOutCubic.transform(p);
-                  rotation = lerpDouble(math.pi / 2, 0.0, ease)!;
-                  horizontalAlign = lerpDouble(1.0, 0.0, ease)!;
-                  verticalAlign = lerpDouble(0.0, -0.08, ease)!;
-                  glassWidth = lerpDouble(500, 600, ease)!;
-                } else if (totalProgress < phaseGlassMovesLeft) {
-                  double p = (totalProgress - phaseProjectsStart) / (phaseGlassMovesLeft - phaseProjectsStart);
-                  double ease = Curves.easeInOutCubic.transform(p);
-                  rotation = lerpDouble(0.0, -math.pi / 2, ease)!;
-                  horizontalAlign = lerpDouble(0.0, -1.3, ease)!;
-                  verticalAlign = lerpDouble(-0.08, 0.0, ease)!;
-                  glassWidth = lerpDouble(600, 500, ease)!;
-                } else if (growProgress < 0.5) {
-                  // Glass moves out to the left as skill section appears (first 50% of growProgress)
-                  double exitProgress = (growProgress / 0.5); // Normalized to [0, 1]
-                  double ease = Curves.easeInOutCubic.transform(exitProgress);
-                  
-                  rotation = -math.pi / 2;
-                  horizontalAlign = lerpDouble(-1.3, -3.0, ease)!; // Moves far left, off-screen
-                  verticalAlign = 0.0;
-                  glassWidth = 500;
-                } else {
-                  // Glass comes from right side (second 50% of growProgress)
-                  double enterProgress = ((growProgress - 0.5) / 0.5); // Normalized to [0, 1]
-                  double ease = Curves.easeInOutCubic.transform(enterProgress);
-                  
-                  rotation = lerpDouble(-math.pi / 2, -20 * (math.pi / 180), ease)!; // Rotates from -90° to -20°
-                  horizontalAlign = lerpDouble(3.0, -0.2, ease)!; // Comes from far right outside screen to center
-                  verticalAlign = lerpDouble(0.0, -0.5, ease)!; // move a bit upwards as it settles
-                  glassWidth = lerpDouble(300, 200, ease)!; // shrink size once centered
-                }
-
-                return IgnorePointer(
-                  child: Align(
-                    alignment: Alignment(horizontalAlign, verticalAlign),
-                    child: SizedBox(
-                      width: glassWidth,
-                      child: Transform.rotate(angle: rotation, child: child),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            // --- NAVIGATION ---
-            if (screenWidth > 600)
-              Positioned(
-                top: 0, bottom: 0, right: 0,
-                child: Container(
-                  width: 80,
-                  alignment: Alignment.center,
-                  child: CustomNavBar(
-                    currentIndex: _currentNavIndex,
-                    onHomeTap: () => _scrollTo(0),
-                    onAboutTap: () => _scrollTo(screenHeight),
-                    onProjectsTap: () => _scrollTo(screenHeight * 2),
-                    onSkillsTap: () => _scrollTo(screenHeight * 4.5),
-                    onExperienceTap: () => _scrollTo(screenHeight * 6.5),
-                    onGalleryTap: () => _scrollTo(screenHeight * 7.5),
-                    onContactTap: () => _scrollTo(screenHeight * 8.5),
-                  ),
+          // 2. CONTENT LAYER
+          CustomScrollView(
+            controller: _scrollController,
+            physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            slivers: [
+              SliverToBoxAdapter(child: HeroSection(screenHeight: screenHeight, screenWidth: screenWidth)),
+              SliverToBoxAdapter(child: AboutSection(screenHeight: screenHeight, screenWidth: screenWidth)),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: ProjectSectionDelegate(
+                  screenHeight: screenHeight,
+                  screenWidth: screenWidth,
+                  scrollController: _scrollController,
                 ),
               ),
+              SliverToBoxAdapter(child: SizedBox(height: screenHeight * 3.5)),
+              SliverToBoxAdapter(child: ExperienceSection(screenWidth: screenWidth)),
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: screenHeight,
+                  child: GallerySection(screenHeight: screenHeight, screenWidth: screenWidth),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: ContactSection(screenWidth: screenWidth, screenHeight: screenHeight),
+              ),
+            ],
+          ),
 
-            // --- CURSOR ---
-            ValueListenableBuilder<bool>(
-              valueListenable: _isHovering,
-              builder: (context, isHovering, child) {
-                if (!isHovering) return const SizedBox.shrink();
-                return ValueListenableBuilder<Offset>(
-                  valueListenable: _mousePos,
-                  builder: (context, pos, child) {
-                    return AnimatedPositioned(
-                      duration: const Duration(milliseconds: 50),
-                      curve: Curves.easeOutCubic,
-                      left: pos.dx - 15,
-                      top: pos.dy - 15, 
-                      child: const IgnorePointer(child: CustomCursorWidget()),
-                    );
-                  },
-                );
-              },
+          // 3. FLOATING GLASSES ANIMATION
+          AnimatedBuilder(
+            animation: _scrollController,
+            child: const RepaintBoundary(child: HeroSpecsImage()),
+            builder: (context, child) {
+              double offset = _scrollController.hasClients ? _scrollController.offset : 0.0;
+              double totalProgress = (offset / (screenHeight * 4)).clamp(0.0, 1.0);
+              if (offset < 0) return const SizedBox.shrink();
+
+              double startAt = screenHeight * 2;
+              double projectProgress = ((offset - startAt) / screenHeight).clamp(0.0, 4.5);
+              double growProgress = ((projectProgress - 2.5) / 1.0).clamp(0.0, 1.0);
+              double expProgress = ((projectProgress - 3.5) / 1.0).clamp(0.0, 1.0);
+
+              double phaseAbout = 1.0 / 4.0; 
+              double phaseProjectsStart = 2.0 / 4.0; 
+              double phaseGlassMovesLeft = 2.5 / 4.0; 
+
+              double rotation, horizontalAlign, verticalAlign, glassWidth;
+
+              // --- BASE LOGIC ---
+              if (totalProgress < phaseAbout) {
+                double p = totalProgress / phaseAbout;
+                double ease = Curves.easeInOutCubic.transform(p);
+                rotation = lerpDouble(-7 * (math.pi / 180), math.pi / 2, ease)!;
+                horizontalAlign = lerpDouble(0.0, 1.0, ease)!;
+                verticalAlign = lerpDouble(-0.22, 0.0, ease)!;
+                glassWidth = lerpDouble(180, 500, ease)!;
+              } else if (totalProgress < phaseProjectsStart) {
+                double p = (totalProgress - phaseAbout) / (phaseProjectsStart - phaseAbout);
+                double ease = Curves.easeInOutCubic.transform(p);
+                rotation = lerpDouble(math.pi / 2, 0.0, ease)!;
+                horizontalAlign = lerpDouble(1.0, 0.0, ease)!;
+                verticalAlign = lerpDouble(0.0, -0.08, ease)!;
+                glassWidth = lerpDouble(500, 600, ease)!;
+              } else if (totalProgress < phaseGlassMovesLeft) {
+                double p = (totalProgress - phaseProjectsStart) / (phaseGlassMovesLeft - phaseProjectsStart);
+                double ease = Curves.easeInOutCubic.transform(p);
+                rotation = lerpDouble(0.0, -math.pi / 2, ease)!;
+                horizontalAlign = lerpDouble(0.0, -1.3, ease)!;
+                verticalAlign = lerpDouble(-0.08, 0.0, ease)!;
+                glassWidth = lerpDouble(600, 500, ease)!;
+              } else if (growProgress < 0.5) {
+                double exitProgress = (growProgress / 0.5); 
+                double ease = Curves.easeInOutCubic.transform(exitProgress);
+                rotation = -math.pi / 2;
+                horizontalAlign = lerpDouble(-1.3, -3.0, ease)!; 
+                verticalAlign = 0.0;
+                glassWidth = 500;
+              } else if (expProgress == 0) {
+                double enterProgress = ((growProgress - 0.5) / 0.5); 
+                double ease = Curves.easeInOutCubic.transform(enterProgress);
+                rotation = lerpDouble(-math.pi / 2, -20 * (math.pi / 180), ease)!; 
+                horizontalAlign = lerpDouble(3.0, -0.2, ease)!; 
+                verticalAlign = lerpDouble(0.0, -0.5, ease)!; 
+                glassWidth = lerpDouble(300, 200, ease)!; 
+              } else {
+                double bounceEase = Curves.bounceOut.transform(expProgress);
+                double smoothEase = Curves.easeInOutCubic.transform(expProgress);
+                rotation = lerpDouble(-20 * (math.pi / 180), 4 * math.pi, smoothEase)!;
+                horizontalAlign = lerpDouble(-0.2, 0.0, smoothEase)!;
+                verticalAlign = lerpDouble(-0.5, 0.0, bounceEase)!;
+                glassWidth = lerpDouble(200, 1300, bounceEase)!;
+              }
+
+              // --- GALLERY OVERRIDE ---
+              if (offset > screenHeight * 6.8 && offset <= screenHeight * 8.0) {
+                double galleryTransition = ((offset - screenHeight * 6.8) / (screenHeight * 1.0)).clamp(0.0, 1.0);
+                double ease = Curves.easeInOutCubic.transform(galleryTransition);
+                rotation = lerpDouble(rotation, math.pi / 2, ease)!;
+                horizontalAlign = lerpDouble(horizontalAlign, -1.19, ease)!;
+                verticalAlign = lerpDouble(verticalAlign, 0.0, ease)!;
+                glassWidth = lerpDouble(glassWidth, 500, ease)!;
+              }
+
+              // --- CONTACT OVERRIDE (STICKY TOP & LARGE) ---
+              if (offset > screenHeight * 8.0) {
+                // Transition over 0.5 screen heights, then clamp (locks in place)
+                double contactTransition = ((offset - screenHeight * 8.0) / (screenHeight * 0.5)).clamp(0.0, 1.0);
+                double ease = Curves.easeInOutCubic.transform(contactTransition);
+                
+                rotation = lerpDouble(math.pi / 2, 0.0, ease)!;
+                horizontalAlign = lerpDouble(-1.19, 0.0, ease)!;
+                // -0.95 keeps it "stuck" at the top of the viewport relative to the stack
+                verticalAlign = lerpDouble(0.0, -0.95, ease)!; 
+                glassWidth = lerpDouble(500, 1200, ease)!; // Large size
+              }
+
+              return IgnorePointer(
+                child: Align(
+                  alignment: Alignment(horizontalAlign, verticalAlign),
+                  child: SizedBox(
+                    width: glassWidth,
+                    child: Transform.rotate(angle: rotation, child: child),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // 4. NAVIGATION
+          if (screenWidth > 600)
+            Positioned(
+              top: 0, bottom: 0, right: 0,
+              child: Container(
+                width: 80,
+                alignment: Alignment.center,
+                child: CustomNavBar(
+                  currentIndex: _currentNavIndex,
+                  onHomeTap: () => _scrollTo(0),
+                  onAboutTap: () => _scrollTo(screenHeight),
+                  onProjectsTap: () => _scrollTo(screenHeight * 2),
+                  onSkillsTap: () => _scrollTo(screenHeight * 4.5),
+                  onExperienceTap: () => _scrollTo(screenHeight * 6.5),
+                  onGalleryTap: () => _scrollTo(screenHeight * 7.5),
+                  onContactTap: () => _scrollTo(screenHeight * 8.5),
+                ),
+              ),
             ),
-          ],
-        ),
+
+          // 5. CUSTOM CURSOR
+          ValueListenableBuilder<bool>(
+            valueListenable: _isHovering,
+            builder: (context, isHovering, child) {
+              if (!isHovering) return const SizedBox.shrink();
+              return ValueListenableBuilder<Offset>(
+                valueListenable: _mousePos,
+                builder: (context, pos, child) {
+                  return Positioned(
+                    left: pos.dx - 15,
+                    top: pos.dy - 15, 
+                    child: const IgnorePointer(child: CustomCursorWidget()),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -291,19 +307,14 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
         double offset = scrollController.hasClients ? scrollController.offset : 0.0;
         double startAt = screenHeight * 2;
         double progress = ((offset - startAt) / screenHeight).clamp(0.0, 4.5);
-
-        // Timings for Background Transition
-        double bgShiftProgress = ((progress - 0.5) / 0.4).clamp(0.0, 1.0); // Syncs with glass moving
-        double stripSlideProgress = ((progress - 0.7) / 0.4).clamp(0.0, 1.0); // Strip enters
-
-        // Existing Card Animation Timings
+        double bgShiftProgress = ((progress - 0.5) / 0.4).clamp(0.0, 1.0);
+        double stripSlideProgress = ((progress - 0.7) / 0.4).clamp(0.0, 1.0);
         double rawDrop = ((progress - 0.5) / 0.3).clamp(0.0, 1.0);
         double rawFan = ((progress - 0.8) / 0.3).clamp(0.0, 1.0);
         double rawSplit = ((progress - 1.1) / 0.4).clamp(0.0, 1.0);
         double rawRotate = ((progress - 1.5) / 0.5).clamp(0.0, 1.0);
         double growProgress = ((progress - 2.5) / 1.0).clamp(0.0, 1.0);
         double slideUpProgress = ((progress - 3.5) / 1.0).clamp(0.0, 1.0);
-
         double titleXOffset = lerpDouble((screenWidth / 2) - 150, 60.0, Curves.easeInOutCubic.transform(rawSplit))!;
         double titleOpacity = lerpDouble(1.0, 0.0, (growProgress - 0.8).clamp(0.0, 1.0) / 0.2)!;
         double finalYOffset = lerpDouble(screenHeight, 0, Curves.fastOutSlowIn.transform(growProgress))! + (-screenHeight * slideUpProgress);
@@ -319,14 +330,12 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // --- DYNAMIC BACKGROUND TRANSITION ---
                 if (cardOpacity > 0.01)
                   Positioned.fill(
                     child: Opacity(
                       opacity: cardOpacity * 0.7,
                       child: Stack(
                         children: [
-                          // Main Leather Image (Shrinks from 100% to 80%)
                           Align(
                             alignment: Alignment.centerRight,
                             child: FractionallySizedBox(
@@ -335,7 +344,6 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                               child: Image.asset('assets/images/black leather.jpg', fit: BoxFit.cover),
                             ),
                           ),
-                          // Side Strip (4.png) (Slides in from left)
                           Positioned(
                             left: lerpDouble(-screenWidth * 0.12, 0, Curves.easeOutCubic.transform(stripSlideProgress)),
                             top: 0, bottom: 0,
@@ -347,17 +355,13 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                                 0.299, 0.587, 0.114, 0, 0,
                                 0, 0, 0, 1, 0,
                               ]),
-                              child: Transform.scale(
-                                scale: 1.0,
-                                child: Image.asset('assets/images/4.png', fit: BoxFit.cover, errorBuilder: (c,e,s)=>Container(color: Colors.grey[900])),
-                              ),
+                              child: Image.asset('assets/images/4.png', fit: BoxFit.cover),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-
                 Positioned(
                   top: 50,
                   right: titleXOffset,
@@ -366,7 +370,6 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                     child: const Text("PROJECTS", style: TextStyle(fontSize: 64, fontFamily: 'gondens', fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 10)),
                   ),
                 ),
-
                 if (cardOpacity > 0.01)
                   Opacity(
                     opacity: cardOpacity,
@@ -389,7 +392,6 @@ class ProjectSectionDelegate extends SliverPersistentHeaderDelegate {
                       ),
                     ),
                   ),
-
                 if (growProgress > 0)
                   Transform.translate(
                     offset: Offset(0, finalYOffset),
@@ -420,7 +422,11 @@ class HeroSpecsImage extends StatelessWidget {
   const HeroSpecsImage({super.key});
   @override
   Widget build(BuildContext context) {
-    return Image.asset('assets/images/glass.png', fit: BoxFit.contain, errorBuilder: (c, e, s) => const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange));
+    return Image.asset(
+      'assets/images/glass.png', 
+      fit: BoxFit.contain, 
+      errorBuilder: (c, e, s) => const Icon(Icons.remove_red_eye, size: 100, color: Colors.orange),
+    );
   }
 }
 
