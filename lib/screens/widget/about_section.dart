@@ -13,7 +13,11 @@ class AboutSection extends StatefulWidget {
   final double screenHeight;
   final double screenWidth;
 
-  const AboutSection({super.key, required this.screenHeight, required this.screenWidth});
+  const AboutSection({
+    super.key,
+    required this.screenHeight,
+    required this.screenWidth,
+  });
 
   @override
   State<AboutSection> createState() => _AboutSectionState();
@@ -22,8 +26,8 @@ class AboutSection extends StatefulWidget {
 class _AboutSectionState extends State<AboutSection>
     with TickerProviderStateMixin {
   late AnimationController _revealCtrl;
-  late AnimationController _floatCtrl; 
-  late AnimationController _counterCtrl; 
+  late AnimationController _floatCtrl;
+  late AnimationController _counterCtrl;
 
   bool _hasRevealed = false;
 
@@ -65,32 +69,20 @@ class _AboutSectionState extends State<AboutSection>
   @override
   Widget build(BuildContext context) {
     bool isMobile = widget.screenWidth <= 800;
-    
+
     if (isMobile) {
-      // Mobile: Stack vertically
+      // Mobile: show only the content panel (hide lower image panel)
       return SizedBox(
-        child: Column(
-          children: [
-            // ── TOP: Orange section (60% of visible content) ──
-            SizedBox(
-              height: widget.screenHeight * 0.6,
-              child: _OrangePanel(
-                revealCtrl: _revealCtrl,
-                floatCtrl: _floatCtrl,
-                counterCtrl: _counterCtrl,
-                isMobile: true,
-              ),
-            ),
-            // ── BOTTOM: Black section (40% of visible content) ──
-            SizedBox(
-              height: widget.screenHeight * 0.4,
-              child: _BlackPanel(revealCtrl: _revealCtrl, isMobile: true),
-            ),
-          ],
+        height: widget.screenHeight,
+        child: _OrangePanel(
+          revealCtrl: _revealCtrl,
+          floatCtrl: _floatCtrl,
+          counterCtrl: _counterCtrl,
+          isMobile: true,
         ),
       );
     }
-    
+
     return SizedBox(
       height: widget.screenHeight,
       child: Row(
@@ -135,6 +127,9 @@ class _OrangePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final horizontalPad = isMobile ? 24.0 : 80.0;
+    final verticalPad = isMobile ? 32.0 : 80.0;
+
     return Container(
       color: _kOrange,
       child: Stack(
@@ -176,7 +171,10 @@ class _OrangePanel extends StatelessWidget {
 
           // ── Main content ──────────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 80),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPad,
+              vertical: verticalPad,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -201,18 +199,17 @@ class _OrangePanel extends StatelessWidget {
                 //     ],
                 //   ),
                 // ),
-
                 const SizedBox(height: 20),
 
                 // ABOUT title — split stagger
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.08,
-                  child: const Text(
+                  child: Text(
                     'ABOUT ME.',
                     style: TextStyle(
                       fontFamily: 'gondens',
-                      fontSize: 100,
+                      fontSize: isMobile ? 56 : 100,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
                       height: 0.9,
@@ -236,7 +233,6 @@ class _OrangePanel extends StatelessWidget {
                 //     ),
                 //   ),
                 // ),
-
                 const SizedBox(height: 40),
 
                 // Updated Professional Description
@@ -244,14 +240,14 @@ class _OrangePanel extends StatelessWidget {
                   controller: revealCtrl,
                   delay: 0.22,
                   child: SizedBox(
-                    width: 600,
+                    width: isMobile ? double.infinity : 600,
                     child: Text(
                       "I am a creative frontend developer passionate about crafting immersive, "
                       "high-performance digital experiences. Bridging the gap between sleek "
                       "design and robust engineering, I build pixel-perfect interfaces that "
                       "feel alive and intuitive.",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: isMobile ? 15 : 18,
                         fontFamily: 'Courier',
                         color: Colors.white.withOpacity(0.85),
                         height: 1.8,
@@ -261,13 +257,16 @@ class _OrangePanel extends StatelessWidget {
                   ),
                 ),
 
-                const Spacer(),
+                if (isMobile) const SizedBox(height: 22) else const Spacer(),
 
                 // Improved Stats row with vertical dividers
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.38,
-                  child: Row(
+                  child: Wrap(
+                    spacing: 22,
+                    runSpacing: 14,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       _AnimatedStat(
                         label: 'PROJECTS',
@@ -276,8 +275,9 @@ class _OrangePanel extends StatelessWidget {
                         controller: counterCtrl,
                       ),
                       const SizedBox(width: 40),
-                      Container(width: 1, height: 50, color: Colors.white30), // Vertical Divider
-                      const SizedBox(width: 40),
+                      if (!isMobile)
+                        Container(width: 1, height: 50, color: Colors.white30),
+                      if (!isMobile) const SizedBox(width: 40),
                       _AnimatedStat(
                         label: 'MONTHS EXPERIENCE',
                         targetValue: 8,
@@ -289,16 +289,14 @@ class _OrangePanel extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                SizedBox(height: isMobile ? 28 : 48),
 
                 // CTA row
                 _RevealItem(
                   controller: revealCtrl,
                   delay: 0.48,
                   child: Row(
-                    children: [
-                      const _GhostButton(label: 'VIEW RESUME →'),
-                    ],
+                    children: [const _GhostButton(label: 'VIEW RESUME →')],
                   ),
                 ),
               ],
@@ -355,7 +353,7 @@ class _BlackPanel extends StatelessWidget {
             child: _RevealItem(
               controller: revealCtrl,
               delay: 0.4, // delayed so it appears after the text
-              child: const _HoverImageProfile(),
+              child: _HoverImageProfile(isMobile: isMobile),
             ),
           ),
         ],
@@ -370,7 +368,9 @@ class _BlackPanel extends StatelessWidget {
 
 /// Profile Image with B&W to Color hover effect
 class _HoverImageProfile extends StatefulWidget {
-  const _HoverImageProfile();
+  final bool isMobile;
+
+  const _HoverImageProfile({required this.isMobile});
 
   @override
   State<_HoverImageProfile> createState() => _HoverImageProfileState();
@@ -380,17 +380,49 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
   bool _isHovered = false;
 
   static const _greyscaleMatrix = <double>[
-    0.2126, 0.7152, 0.0722, 0, 0,
-    0.2126, 0.7152, 0.0722, 0, 0,
-    0.2126, 0.7152, 0.0722, 0, 0,
-    0,      0,      0,      1, 0,
+    0.2126,
+    0.7152,
+    0.0722,
+    0,
+    0,
+    0.2126,
+    0.7152,
+    0.0722,
+    0,
+    0,
+    0.2126,
+    0.7152,
+    0.0722,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
   ];
 
   static const _colorMatrix = <double>[
-    1, 0, 0, 0, 0,
-    0, 1, 0, 0, 0,
-    0, 0, 1, 0, 0,
-    0, 0, 0, 1, 0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
   ];
 
   @override
@@ -411,7 +443,7 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
               color: _isHovered ? _kOrange.withOpacity(0.3) : Colors.black45,
               blurRadius: _isHovered ? 30 : 15,
               spreadRadius: 2,
-            )
+            ),
           ],
         ),
         // Clip to ensure the image doesn't overflow any transforms
@@ -427,16 +459,18 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
               builder: (context, value, child) {
                 // Interpolate between greyscale and full color matrices
                 List<double> currentMatrix = List.generate(20, (index) {
-                  return _greyscaleMatrix[index] + 
-                        (_colorMatrix[index] - _greyscaleMatrix[index]) * value;
+                  return _greyscaleMatrix[index] +
+                      (_colorMatrix[index] - _greyscaleMatrix[index]) * value;
                 });
 
                 return ColorFiltered(
                   colorFilter: ColorFilter.matrix(currentMatrix),
-                  child: Image.asset(
-                    'assets/images/nithesh1.png',
-                    // allow image to show at natural size
-                    fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: widget.isMobile ? 210 : 320,
+                    child: Image.asset(
+                      'assets/images/nithesh1.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 );
               },
@@ -451,7 +485,7 @@ class _HoverImageProfileState extends State<_HoverImageProfile> {
 /// Slides and fades in from below with a delay
 class _RevealItem extends StatelessWidget {
   final AnimationController controller;
-  final double delay; 
+  final double delay;
   final Widget child;
 
   const _RevealItem({
@@ -465,7 +499,10 @@ class _RevealItem extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) {
-        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
+        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(
+          0.0,
+          1.0,
+        );
         final t = Curves.easeOutCubic.transform(raw);
         return Opacity(
           opacity: t,
@@ -497,10 +534,15 @@ class _AnimatedStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 800;
+
     return AnimatedBuilder(
       animation: controller,
       builder: (_, __) {
-        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
+        final raw = ((controller.value - delay) / (1.0 - delay)).clamp(
+          0.0,
+          1.0,
+        );
         final t = Curves.easeOutCubic.transform(raw);
         final val = (targetValue * t).round();
         return Column(
@@ -508,9 +550,9 @@ class _AnimatedStat extends StatelessWidget {
           children: [
             Text(
               '$val$suffix',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'gondens',
-                fontSize: 60, // Made stats larger
+                fontSize: isMobile ? 42 : 60,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
                 height: 1,
@@ -553,7 +595,10 @@ class _GhostButtonState extends State<_GhostButton> {
       onExit: (_) => setState(() => _hovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16), // Made button larger
+        padding: const EdgeInsets.symmetric(
+          horizontal: 32,
+          vertical: 16,
+        ), // Made button larger
         decoration: BoxDecoration(
           color: _hovered ? Colors.white : Colors.black,
           border: Border.all(
@@ -597,7 +642,8 @@ class _OrangeTexturePainter extends CustomPainter {
       final path = Path();
       path.moveTo(0, y0);
       for (double x = 0; x <= size.width; x += 4) {
-        final y = y0 +
+        final y =
+            y0 +
             math.sin(
                   (x / size.width) * 4 * math.pi + phase * math.pi * 2 + row,
                 ) *

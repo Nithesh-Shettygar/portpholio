@@ -9,8 +9,13 @@ class SkillsPopupContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 800;
+
     // Global opacity for the header and background dots
-    double contentOpacity = math.max(0, (progress - 0.3) / 0.7).toDouble().clamp(0.0, 1.0);
+    double contentOpacity = math
+        .max(0, (progress - 0.3) / 0.7)
+        .toDouble()
+        .clamp(0.0, 1.0);
 
     return Stack(
       children: [
@@ -21,84 +26,124 @@ class SkillsPopupContent extends StatelessWidget {
         ),
         Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // --- Updated Title ---
-                Opacity(
-                  opacity: contentOpacity,
-                  child: Column(
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 40),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(vertical: isMobile ? 20 : 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // --- Updated Title ---
+                  Opacity(
+                    opacity: contentOpacity,
+                    child: Column(
+                      children: [
+                        Text(
+                          "SKILLS",
+                          style: TextStyle(
+                            fontSize: isMobile ? 38 : 52,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: isMobile ? 8 : 12,
+                            fontFamily: 'gondens',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(height: 2, width: 60, color: Colors.white24),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: isMobile ? 30 : 60),
+
+                  // --- Animated Cards Grid ---
+                  Wrap(
+                    spacing: isMobile ? 16 : 40,
+                    runSpacing: isMobile ? 16 : 40,
+                    alignment: WrapAlignment.center,
                     children: [
-                      const Text(
-                        "SKILLS",
-                        style: TextStyle(
-                          fontSize: 52,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 12,
-                          fontFamily: 'gondens',
+                      _EntranceAnimation(
+                        delay: 0.4,
+                        progress: progress,
+                        child: _HoverAnimatedCard(
+                          title: "DEVELOPMENT",
+                          baseAngle: -8 * (math.pi / 180),
+                          skills: const [
+                            _SkillCircle(
+                              title: "FLUTTER",
+                              icon: Icons.flutter_dash,
+                              percentage: 0.9,
+                            ),
+                            _SkillCircle(
+                              title: "DART",
+                              icon: Icons.code,
+                              percentage: 0.88,
+                            ),
+                            _SkillCircle(
+                              title: "PYTHON",
+                              icon: Icons.terminal,
+                              percentage: 0.8,
+                            ),
+                            _SkillCircle(
+                              title: "JS",
+                              icon: Icons.javascript,
+                              percentage: 0.75,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Container(height: 2, width: 60, color: Colors.white24),
+                      _EntranceAnimation(
+                        delay: 0.55,
+                        progress: progress,
+                        child: _HoverAnimatedCard(
+                          title: "DESIGN",
+                          baseAngle: 4 * (math.pi / 180),
+                          skills: const [
+                            _SkillCircle(
+                              title: "FIGMA",
+                              icon: Icons.design_services,
+                              percentage: 0.75,
+                            ),
+                            _SkillCircle(
+                              title: "ADOBE PS",
+                              icon: Icons.brush,
+                              percentage: 0.65,
+                            ),
+                            _SkillCircle(
+                              title: "UI/UX",
+                              icon: Icons.auto_awesome,
+                              percentage: 0.8,
+                            ),
+                          ],
+                        ),
+                      ),
+                      _EntranceAnimation(
+                        delay: 0.7,
+                        progress: progress,
+                        child: _HoverAnimatedCard(
+                          title: "INFRA",
+                          baseAngle: -12 * (math.pi / 180),
+                          skills: const [
+                            _SkillCircle(
+                              title: "GITHUB",
+                              icon: Icons.hub,
+                              percentage: 0.85,
+                            ),
+                            _SkillCircle(
+                              title: "FIREBASE",
+                              icon: Icons.cloud,
+                              percentage: 0.8,
+                            ),
+                            _SkillCircle(
+                              title: "AWS",
+                              icon: Icons.storage,
+                              percentage: 0.5,
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 60),
-
-                // --- Animated Cards Grid ---
-                Wrap(
-                  spacing: 40,
-                  runSpacing: 40,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _EntranceAnimation(
-                      delay: 0.4,
-                      progress: progress,
-                      child: _HoverAnimatedCard(
-                        title: "DEVELOPMENT",
-                        baseAngle: -8 * (math.pi / 180),
-                        accentColor: Colors.blueAccent,
-                        skills: const [
-                          _SkillCircle(title: "FLUTTER", icon: Icons.flutter_dash, percentage: 0.9),
-                          _SkillCircle(title: "DART", icon: Icons.code, percentage: 0.88),
-                          _SkillCircle(title: "PYTHON", icon: Icons.terminal, percentage: 0.8),
-                          _SkillCircle(title: "JS", icon: Icons.javascript, percentage: 0.75),
-                        ],
-                      ),
-                    ),
-                    _EntranceAnimation(
-                      delay: 0.55,
-                      progress: progress,
-                      child: _HoverAnimatedCard(
-                        title: "DESIGN",
-                        baseAngle: 4 * (math.pi / 180),
-                        accentColor: Colors.purpleAccent,
-                        skills: const [
-                          _SkillCircle(title: "FIGMA", icon: Icons.design_services, percentage: 0.75),
-                          _SkillCircle(title: "ADOBE PS", icon: Icons.brush, percentage: 0.65),
-                          _SkillCircle(title: "UI/UX", icon: Icons.auto_awesome, percentage: 0.8),
-                        ],
-                      ),
-                    ),
-                    _EntranceAnimation(
-                      delay: 0.7,
-                      progress: progress,
-                      child: _HoverAnimatedCard(
-                        title: "INFRA",
-                        baseAngle: -12 * (math.pi / 180),
-                        accentColor: Colors.orangeAccent,
-                        skills: const [
-                          _SkillCircle(title: "GITHUB", icon: Icons.hub, percentage: 0.85),
-                          _SkillCircle(title: "FIREBASE", icon: Icons.cloud, percentage: 0.8),
-                          _SkillCircle(title: "AWS", icon: Icons.storage, percentage: 0.5),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -122,8 +167,11 @@ class _EntranceAnimation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate local animation progress based on the global progress scroll
-    double localProgress = math.max(0, (progress - delay) / 0.3).toDouble().clamp(0.0, 1.0);
-    
+    double localProgress = math
+        .max(0, (progress - delay) / 0.3)
+        .toDouble()
+        .clamp(0.0, 1.0);
+
     // Curving the animation for a "pop in" feel
     double curve = Curves.easeOutBack.transform(localProgress);
 
@@ -141,13 +189,11 @@ class _HoverAnimatedCard extends StatefulWidget {
   final String title;
   final List<Widget> skills;
   final double baseAngle;
-  final Color accentColor;
 
   const _HoverAnimatedCard({
     required this.title,
     required this.skills,
     required this.baseAngle,
-    required this.accentColor,
   });
 
   @override
@@ -159,6 +205,8 @@ class _HoverAnimatedCardState extends State<_HoverAnimatedCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 800;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -167,24 +215,21 @@ class _HoverAnimatedCardState extends State<_HoverAnimatedCard> {
         curve: Curves.easeOutCubic,
         transformAlignment: Alignment.center,
         transform: Matrix4.identity()
-          ..rotateZ(_isHovered ? 0.0 : widget.baseAngle)
+          ..rotateZ(isMobile ? 0.0 : (_isHovered ? 0.0 : widget.baseAngle))
           ..scale(_isHovered ? 1.05 : 1.0),
         child: Container(
-          width: 320,
-          height: 420,
+          width: isMobile ? 290 : 320,
+          height: isMobile ? 300 : 420,
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: _isHovered ? widget.accentColor.withOpacity(0.8) : Colors.white.withOpacity(0.1),
-              width: 1.5,
-            ),
+            border: Border.all(color: Colors.white, width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: _isHovered ? widget.accentColor.withOpacity(0.2) : Colors.black54,
-                blurRadius: _isHovered ? 40 : 20,
+                color: Colors.black54,
+                blurRadius: 20,
                 offset: const Offset(0, 10),
-              )
+              ),
             ],
           ),
           child: Padding(
@@ -201,13 +246,6 @@ class _HoverAnimatedCardState extends State<_HoverAnimatedCard> {
                     letterSpacing: 1.5,
                     fontFamily: 'gondens',
                   ),
-                ),
-                const SizedBox(height: 8),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  height: 2,
-                  width: _isHovered ? 60 : 30,
-                  color: widget.accentColor,
                 ),
                 const SizedBox(height: 30),
                 Expanded(
@@ -234,7 +272,11 @@ class _SkillCircle extends StatefulWidget {
   final IconData icon;
   final double percentage;
 
-  const _SkillCircle({required this.title, required this.icon, required this.percentage});
+  const _SkillCircle({
+    required this.title,
+    required this.icon,
+    required this.percentage,
+  });
 
   @override
   State<_SkillCircle> createState() => _SkillCircleState();
@@ -260,19 +302,25 @@ class _SkillCircleState extends State<_SkillCircle> {
                 child: CustomPaint(
                   painter: _PercentagePainter(
                     percentage: widget.percentage,
-                    color: _isHovered ? Colors.white : Colors.white.withOpacity(0.3),
+                    color: _isHovered
+                        ? const Color(0xFFF26A1B)
+                        : const Color(0xFFF26A1B),
                     thickness: 3,
                   ),
                 ),
               ),
-              Icon(widget.icon, size: 20, color: _isHovered ? Colors.white : Colors.white60),
+              Icon(
+                widget.icon,
+                size: 20,
+                color: _isHovered ? Colors.white : Colors.white60,
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             widget.title,
             style: TextStyle(
-              color: _isHovered ? Colors.white : Colors.white38,
+              color: const Color(0xFFF26A1B),
               fontSize: 9,
               fontWeight: FontWeight.w600,
             ),
@@ -288,7 +336,11 @@ class _PercentagePainter extends CustomPainter {
   final Color color;
   final double thickness;
 
-  _PercentagePainter({required this.percentage, required this.color, required this.thickness});
+  _PercentagePainter({
+    required this.percentage,
+    required this.color,
+    required this.thickness,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -300,8 +352,21 @@ class _PercentagePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = thickness;
 
-    canvas.drawCircle(center, radius, Paint()..color = Colors.white.withOpacity(0.05)..style = PaintingStyle.stroke..strokeWidth = thickness);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -math.pi / 2, 2 * math.pi * percentage, false, paint);
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..color = color.withOpacity(0.2)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = thickness,
+    );
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * percentage,
+      false,
+      paint,
+    );
   }
 
   @override
@@ -314,10 +379,15 @@ class _StaticDotPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.05 * globalOpacity);
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.05 * globalOpacity);
     final rng = math.Random(42);
     for (int i = 0; i < 40; i++) {
-      canvas.drawCircle(Offset(rng.nextDouble() * size.width, rng.nextDouble() * size.height), 0.8, paint);
+      canvas.drawCircle(
+        Offset(rng.nextDouble() * size.width, rng.nextDouble() * size.height),
+        0.8,
+        paint,
+      );
     }
   }
 

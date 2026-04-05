@@ -7,9 +7,9 @@ import 'dart:math' as math;
 // ║              Ultra-thin vertical — wave behind centered icons              ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 
-const _kCyan    = Color(0xFFF26A1B);
+const _kCyan = Color(0xFFF26A1B);
 const _kCyanDim = Color(0xFFFFBA92);
-const _kBg      = Color(0xFF070A10);
+const _kBg = Color(0xFF070A10);
 
 // ───────────────────────────────────────────────────────────────────────────
 //  PUBLIC WIDGET
@@ -100,14 +100,14 @@ class _CustomNavBarState extends State<CustomNavBar>
   }
 
   List<VoidCallback> get _cbs => [
-        widget.onHomeTap,
-        widget.onAboutTap,
-        widget.onProjectsTap,
-        widget.onSkillsTap,
-        widget.onExperienceTap,
-        widget.onGalleryTap,
-        widget.onContactTap,
-      ];
+    widget.onHomeTap,
+    widget.onAboutTap,
+    widget.onProjectsTap,
+    widget.onSkillsTap,
+    widget.onExperienceTap,
+    widget.onGalleryTap,
+    widget.onContactTap,
+  ];
 
   static const _icons = [
     Icons.home_rounded,
@@ -125,10 +125,14 @@ class _CustomNavBarState extends State<CustomNavBar>
     setState(() => _hoveredIndex = entering ? i : -1);
     if (i != widget.currentIndex) {
       entering
-          ? _ampCtrls[i].animateTo(0.45,
-              duration: const Duration(milliseconds: 250))
-          : _ampCtrls[i].animateTo(0.0,
-              duration: const Duration(milliseconds: 300));
+          ? _ampCtrls[i].animateTo(
+              0.45,
+              duration: const Duration(milliseconds: 250),
+            )
+          : _ampCtrls[i].animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 300),
+            );
     }
   }
 
@@ -148,7 +152,7 @@ class _CustomNavBarState extends State<CustomNavBar>
             child: BackdropFilter(
               filter: ui.ImageFilter.blur(sigmaX: 40, sigmaY: 40),
               child: Container(
-                width: 30,          // ← ultra-thin
+                width: 30, // ← ultra-thin
                 decoration: BoxDecoration(
                   color: Colors.black,
                   // borderRadius: BorderRadius.circular(32),
@@ -216,12 +220,12 @@ class _SeismicPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const maxAmp  = 9.0;
-    const steps   = 600;
+    const maxAmp = 9.0;
+    const steps = 600;
 
     // The wave spine runs down the horizontal centre of the bar
     final double baseX = size.width * 0.5;
-    final double ih    = size.height / totalItems;
+    final double ih = size.height / totalItems;
 
     // ── Build vertical wave path ──────────────────────────────────────────
     final path = Path();
@@ -233,9 +237,9 @@ class _SeismicPainter extends CustomPainter {
       for (int i = 0; i < totalItems; i++) {
         final amp = amplitudes[i];
         if (amp < 0.005) continue;
-        final cy    = (i + 0.5) * ih;
+        final cy = (i + 0.5) * ih;
         final sigma = ih * 0.38;
-        final norm  = (y - cy) / sigma;
+        final norm = (y - cy) / sigma;
         final gauss = math.exp(-norm * norm * 0.5);
         final wavePhase = phase + (y - cy) / ih * 2.0 * math.pi;
         dx -= amp * maxAmp * gauss * math.sin(wavePhase);
@@ -243,11 +247,11 @@ class _SeismicPainter extends CustomPainter {
 
       // Burst ripple
       if (burstIndex >= 0 && burstProgress > 0 && burstProgress < 1.0) {
-        final cy    = (burstIndex + 0.5) * ih;
+        final cy = (burstIndex + 0.5) * ih;
         final sigma = ih * 0.30;
-        final norm  = (y - cy) / sigma;
+        final norm = (y - cy) / sigma;
         final spike = math.exp(-norm * norm * 1.2);
-        final decay  = math.pow(1 - burstProgress, 1.8).toDouble();
+        final decay = math.pow(1 - burstProgress, 1.8).toDouble();
         final ripple = math.sin(phase * 5 + (y - cy) / ih * 10 * math.pi);
         dx -= decay * 16 * spike * ripple;
       }
@@ -260,29 +264,29 @@ class _SeismicPainter extends CustomPainter {
     canvas.drawPath(
       path,
       Paint()
-        ..style       = PaintingStyle.stroke
+        ..style = PaintingStyle.stroke
         ..strokeWidth = 8
-        ..color       = _kCyan.withOpacity(0.10)
-        ..maskFilter  = const MaskFilter.blur(BlurStyle.normal, 12),
+        ..color = _kCyan.withOpacity(0.10)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12),
     );
 
     // ── Mid glow ──────────────────────────────────────────────────────────
     canvas.drawPath(
       path,
       Paint()
-        ..style       = PaintingStyle.stroke
+        ..style = PaintingStyle.stroke
         ..strokeWidth = 3
-        ..color       = _kCyan.withOpacity(0.32)
-        ..maskFilter  = const MaskFilter.blur(BlurStyle.normal, 4),
+        ..color = _kCyan.withOpacity(0.32)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
     );
 
     // ── Core line (gradient top → bottom) ────────────────────────────────
     canvas.drawPath(
       path,
       Paint()
-        ..style       = PaintingStyle.stroke
+        ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5
-        ..shader      = ui.Gradient.linear(
+        ..shader = ui.Gradient.linear(
           Offset(baseX, 0),
           Offset(baseX, size.height),
           [
@@ -298,39 +302,39 @@ class _SeismicPainter extends CustomPainter {
 
     // ── Burst particles ───────────────────────────────────────────────────
     if (burstIndex >= 0 && burstProgress > 0.0 && burstProgress < 1.0) {
-      final cx  = baseX;
-      final cy  = (burstIndex + 0.5) * ih;
+      final cx = baseX;
+      final cy = (burstIndex + 0.5) * ih;
       final rng = math.Random(burstIndex * 13 + 77);
       const numP = 12;
 
       for (int p = 0; p < numP; p++) {
-        final angle   = p * (2 * math.pi / numP) + rng.nextDouble() * 0.5;
-        final speed   = 18.0 + rng.nextDouble() * 18.0;
-        final ease    = _easeOutCubic(burstProgress);
-        final px      = cx + math.cos(angle) * speed * ease;
-        final py      = cy + math.sin(angle) * speed * ease;
+        final angle = p * (2 * math.pi / numP) + rng.nextDouble() * 0.5;
+        final speed = 18.0 + rng.nextDouble() * 18.0;
+        final ease = _easeOutCubic(burstProgress);
+        final px = cx + math.cos(angle) * speed * ease;
+        final py = cy + math.sin(angle) * speed * ease;
         final opacity = math.pow(1 - burstProgress, 1.4).toDouble() * 0.85;
-        final radius  = 2.2 * (1 - burstProgress * 0.6);
+        final radius = 2.2 * (1 - burstProgress * 0.6);
 
         canvas.drawCircle(
           Offset(px, py),
           radius,
           Paint()
-            ..color      = _kCyan.withOpacity(opacity)
+            ..color = _kCyan.withOpacity(opacity)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5),
         );
       }
 
       // Shockwave ring
-      final ringR       = _easeOutCubic(burstProgress) * ih * 0.45;
+      final ringR = _easeOutCubic(burstProgress) * ih * 0.45;
       final ringOpacity = math.pow(1 - burstProgress, 2.0).toDouble() * 0.5;
       canvas.drawCircle(
         Offset(cx, cy),
         ringR,
         Paint()
-          ..style       = PaintingStyle.stroke
+          ..style = PaintingStyle.stroke
           ..strokeWidth = 1.5
-          ..color       = _kCyan.withOpacity(ringOpacity),
+          ..color = _kCyan.withOpacity(ringOpacity),
       );
 
       // Central flash
@@ -340,7 +344,7 @@ class _SeismicPainter extends CustomPainter {
           Offset(cx, cy),
           13 * burstProgress,
           Paint()
-            ..color      = Colors.white.withOpacity(flashOpacity)
+            ..color = Colors.white.withOpacity(flashOpacity)
             ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9),
         );
       }
@@ -348,15 +352,14 @@ class _SeismicPainter extends CustomPainter {
 
     // ── Subtle CRT scanlines along the wave strip ─────────────────────────
     final scanPaint = Paint()
-      ..color       = Colors.white.withOpacity(0.016)
+      ..color = Colors.white.withOpacity(0.016)
       ..strokeWidth = 0.5;
     for (double sx = baseX - 16; sx < size.width; sx += 3) {
       canvas.drawLine(Offset(sx, 0), Offset(sx, size.height), scanPaint);
     }
   }
 
-  static double _easeOutCubic(double t) =>
-      1 - math.pow(1 - t, 3).toDouble();
+  static double _easeOutCubic(double t) => 1 - math.pow(1 - t, 3).toDouble();
 
   @override
   bool shouldRepaint(_SeismicPainter old) => true;
@@ -389,7 +392,7 @@ class _SeismicItem extends StatefulWidget {
 class _SeismicItemState extends State<_SeismicItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _pressCtrl;
-  late Animation<double>    _pressAnim;
+  late Animation<double> _pressAnim;
 
   @override
   void initState() {
@@ -398,8 +401,10 @@ class _SeismicItemState extends State<_SeismicItem>
       vsync: this,
       duration: const Duration(milliseconds: 80),
     );
-    _pressAnim = Tween<double>(begin: 1.0, end: 0.88)
-        .animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut));
+    _pressAnim = Tween<double>(
+      begin: 1.0,
+      end: 0.88,
+    ).animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeOut));
   }
 
   @override
@@ -415,11 +420,13 @@ class _SeismicItemState extends State<_SeismicItem>
 
     return MouseRegion(
       onEnter: (_) => widget.onHover(true),
-      onExit:  (_) => widget.onHover(false),
+      onExit: (_) => widget.onHover(false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTapDown:  (_) => _pressCtrl.forward(),
-        onTapUp:    (_) { _pressCtrl.reverse(); widget.onTap(); },
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => _pressCtrl.forward(),
+        onTap: widget.onTap,
+        onTapUp: (_) => _pressCtrl.reverse(),
         onTapCancel: () => _pressCtrl.reverse(),
         child: AnimatedBuilder(
           animation: _pressAnim,
@@ -491,13 +498,13 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
             padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 12),
             child: CustomNavBar(
               currentIndex: _index,
-              onHomeTap:         () => setState(() => _index = 0),
-              onAboutTap:        () => setState(() => _index = 1),
-              onProjectsTap:     () => setState(() => _index = 2),
-              onSkillsTap:       () => setState(() => _index = 3),
-              onExperienceTap:   () => setState(() => _index = 4),
-              onGalleryTap:      () => setState(() => _index = 5),
-              onContactTap:      () => setState(() => _index = 6),
+              onHomeTap: () => setState(() => _index = 0),
+              onAboutTap: () => setState(() => _index = 1),
+              onProjectsTap: () => setState(() => _index = 2),
+              onSkillsTap: () => setState(() => _index = 3),
+              onExperienceTap: () => setState(() => _index = 4),
+              onGalleryTap: () => setState(() => _index = 5),
+              onContactTap: () => setState(() => _index = 6),
             ),
           ),
 
@@ -505,7 +512,15 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
           Expanded(
             child: Center(
               child: Text(
-                ['Home', 'About', 'Projects', 'Skills', 'Experience', 'Gallery', 'Contact'][_index],
+                [
+                  'Home',
+                  'About',
+                  'Projects',
+                  'Skills',
+                  'Experience',
+                  'Gallery',
+                  'Contact',
+                ][_index],
                 style: const TextStyle(
                   fontFamily: 'Courier',
                   color: Color(0xFFF26A1B),
@@ -521,7 +536,6 @@ class _SeismicNavDemoState extends State<_SeismicNavDemo> {
   }
 }
 
-void main() => runApp(const MaterialApp(
-  debugShowCheckedModeBanner: false,
-  home: _SeismicNavDemo(),
-));
+void main() => runApp(
+  const MaterialApp(debugShowCheckedModeBanner: false, home: _SeismicNavDemo()),
+);
